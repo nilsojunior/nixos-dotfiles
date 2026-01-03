@@ -1,0 +1,53 @@
+return {
+	-- 	"nvim-telescope/telescope.nvim",
+	-- 	tag = "0.1.8",
+	-- 	dependencies = {
+	-- 		"nvim-lua/plenary.nvim",
+	-- 		{
+	-- 			"nvim-telescope/telescope-fzf-native.nvim",
+	-- 			build = "make",
+	-- 		},
+	-- 	},
+	-- 	config = function()
+	-- 		require("telescope").setup({
+	-- 			defaults = {
+	-- 				prompt_prefix = "   ",
+	-- 				selection_caret = "  ",
+	-- 				entry_prefix = "  ",
+	-- 				sorting_strategy = "ascending",
+	-- 				layout_config = {
+	-- 					horizontal = {
+	-- 						prompt_position = "top",
+	-- 					},
+	-- 				},
+	-- 			},
+	-- 			pickers = {
+	-- 				find_files = {
+	-- 					file_ignore_patterns = {
+	-- 						"node_modules",
+	-- 						".git",
+	-- 						".venv",
+	-- 					},
+	-- 					hidden = true,
+	-- 				},
+	-- 			},
+	-- 			extensions = {
+	-- 				fzf = {},
+	-- 			},
+	-- 		})
+	-- 		require("telescope").load_extension("fzf")
+	--
+	-- 		local builtin = require("telescope.builtin")
+	-- 		local keymap = vim.keymap.set
+	--
+	-- 		local function find_directories()
+	-- 			builtin.find_files({
+	-- 				prompt_title = "Find Directories",
+	-- 				find_command = { "fd", "--type", "d", "--hidden", "--strip-cwd-prefix" },
+	-- 				-- Optionally exclude .git directory
+	-- 				file_ignore_patterns = { "^.git/" },
+	-- 			})
+	-- 		end
+	-- 		keymap("n", "<leader>fd", find_directories, { desc = "Find files" })
+	-- 	end,
+}
