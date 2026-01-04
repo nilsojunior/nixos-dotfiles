@@ -68,13 +68,23 @@ in
                 };
 
                 settings = {
-                    "browser.newtab.url" = "about:blank";
+                    # Automatically restore session
+                    "browser.startup.page" = 3;
+
+                    "browser.startup.homepage" = "about:blank";
+                    "browser.newtabpage.enabled" = "about:blank";
 
                     # Custom CSS
                     "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
 
                     # Remove search engine icon from search bar
                     "browser.urlbar.scotchBonnet.enableOverride" = false;
+
+                    # Bookmarks bar
+                    "browser.toolbars.bookmarks.visibility" = "never";
+
+                    # Top left icon
+                    "browser.tabs.firefox-view" = false;
 
                     # TODO: check how to do this
                     # File picker
@@ -86,7 +96,7 @@ in
                     * {
                     /* font-family: "Inter" !important; */
                     font-weight: 600;
-                    /* font-size: 12px; */
+                    font-size: 12px;
                     }
 
                     #save-to-pocket-button {

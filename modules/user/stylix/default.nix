@@ -79,11 +79,5 @@ in
                 };
             };
         };
-
-        fonts.fontconfig.defaultFonts = {
-            monospace = [ font.name ];
-            sansSerif = [ font.name ];
-            serif = [ font.name ];
-        };
     };
 }
