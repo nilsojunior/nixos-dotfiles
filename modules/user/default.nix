@@ -9,6 +9,8 @@
         ./terminal
         ./keepass
         ./git
+        ./emacs
+        ./stylix
     ];
     home.file.".config/nvim".source = ./nvim;
 

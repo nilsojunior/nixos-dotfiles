@@ -3,6 +3,7 @@
 
     inputs = {
         nixpkgs.url = "nixpkgs/nixos-unstable";
+
         home-manager = {
             url = "github:nix-community/home-manager";
             inputs.nixpkgs.follows = "nixpkgs";
@@ -12,12 +13,18 @@
             url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
             inputs.nixpkgs.follows = "nixpkgs";
         };
+
+        stylix = {
+            url = "github:nix-community/stylix";
+            inputs.nixpkgs.follows = "nixpkgs";
+        };
     };
 
     outputs =
         {
             nixpkgs,
             home-manager,
+            stylix,
             ...
         }@inputs:
         {
@@ -26,6 +33,7 @@
                 modules = [
                     ./hosts/nixing/configuration.nix
                     home-manager.nixosModules.home-manager
+                    stylix.nixosModules.stylix
                     {
                         home-manager = {
                             useGlobalPkgs = true;

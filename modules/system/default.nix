@@ -11,5 +11,6 @@
         ./nvidia
         ./sshd
         ./gpg
+        ./stylix
     ];
 }

@@ -19,6 +19,9 @@
     systemSettings = {
         hyprland.enable = true;
         nvidia.enable = true;
+        stylix = {
+            enable = true;
+        };
     };
 
     # Use the systemd-boot EFI boot loader.

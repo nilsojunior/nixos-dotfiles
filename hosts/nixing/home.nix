@@ -35,6 +35,10 @@
         terminal = "kitty";
         keepass.enable = true;
         git.enable = true;
+        emacs.enable = true;
+        stylix = {
+            enable = true;
+        };
     };
 
     programs.ssh.enableDefaultConfig = false;
