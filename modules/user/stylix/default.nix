@@ -50,6 +50,11 @@ in
             targets = {
                 hyprland.enable = false;
                 kitty.fonts.enable = false;
+                firefox = {
+                    profileNames = [ "nilso" ];
+                    colorTheme.enable = true;
+                    colors.enable = true;
+                };
             };
 
             fonts = {
@@ -73,6 +78,12 @@ in
                     terminal = font.size;
                 };
             };
+        };
+
+        fonts.fontconfig.defaultFonts = {
+            monospace = [ font.name ];
+            sansSerif = [ font.name ];
+            serif = [ font.name ];
         };
     };
 }

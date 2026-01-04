@@ -19,6 +19,8 @@ in
             enable = true;
             profiles.nilso = {
                 extensions = {
+                    # Do i need this?
+                    force = true;
                     packages =
                         with inputs.firefox-addons.packages."x86_64-linux";
                         [
@@ -66,10 +68,99 @@ in
                 };
 
                 settings = {
-                    "browser.startup.homepage" = "about:blank";
+                    "browser.newtab.url" = "about:blank";
+
                     # Custom CSS
                     "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+
+                    # Remove search engine icon from search bar
+                    "browser.urlbar.scotchBonnet.enableOverride" = false;
+
+                    # TODO: check how to do this
+                    # File picker
+                    # "widget.use-xdg-desktop-portal.file-picker" = 1;
+
                 };
+
+                userChrome = /* CSS */ ''
+                    * {
+                    /* font-family: "Inter" !important; */
+                    font-weight: 600;
+                    /* font-size: 12px; */
+                    }
+
+                    #save-to-pocket-button {
+                    display: none;
+                    }
+
+                    .tab-close-button.close-icon {
+                    display: none;
+                    }
+
+                    #fxa-toolbar-menu-button {
+                    display: none;
+                    }
+
+                    #sidebar-button {
+                    display: none;
+                    }
+
+                    #reload-button {
+                    display: none;
+                    }
+
+                    #forward-button {
+                    display: none;
+                    }
+
+                    #back-button {
+                    display: none;
+                    }
+
+                    .titlebar-button.titlebar-close {
+                    display: none;
+                    }
+
+                    #star-button-box {
+                    display: none;
+                    }
+
+                    #alltabs-button {
+                    display: none;
+                    }
+
+                    #unified-extensions-button:hover {
+                    opacity: 1;
+                    }
+
+                    #unified-extensions-button {
+                    opacity: 0;
+                    }
+
+                    #PanelUI-menu-button:hover {
+                    opacity: 1;
+                    }
+
+                    #PanelUI-menu-button {
+                    opacity: 0;
+                    }
+
+                    #stop-button {
+                    opacity: 0;
+                    }
+
+                    #stop-button:hover {
+                    opacity: 1;
+                    }
+
+                    #tabs-newtab-button {
+                    display: none;
+                    }
+
+                    .tabbrowser-tab:not([selected="true"]):not(:hover) .tab-content {
+                    opacity: 0.7;
+                    }
+                '';
             };
         };
     };

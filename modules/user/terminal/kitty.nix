@@ -15,9 +15,11 @@ in
 
     config = lib.mkIf cfg.enable {
         home.packages = [ pkgs.kitty ];
-        programs.kitty.enable = true;
+        programs.kitty = {
+            enable = true;
+            shellIntegration.mode = "no-cursor";
+        };
         programs.kitty.settings = {
-            shell_integration = "no-cursor";
             confirm_os_window_close = 0;
             copy_on_select = "yes";
             cursor_blink_interval = 0;
