@@ -1,0 +1,168 @@
+#+TITLE: Nilso's GNU Emacs Config
+#+AUTHOR: Nilso Junior
+#+DESCRIPTION: Nilso's Emacs config
+
+* Evil Mode
+
+** Before Evil
+TODO remap the default C-u which i don't know what it does.
+#+begin_src emacs-lisp
+  (setq evil-want-C-u-scroll t
+        evil-want-keybinding nil
+        select-enable-clipboard nil
+        evil-shift-width 4
+        evil-insert-state-cursor '(box))
+#+end_src
+
+*** Undo
+#+begin_src emacs-lisp
+  (setq evil-undo-system 'undo-fu)
+  (undo-fu-session-global-mode)
+#+end_src
+
+*** Splits
+#+begin_src emacs-lisp
+  (setq evil-vsplit-window-right t
+        evil-split-window-below t)
+#+end_src
+
+** Load Evil
+#+begin_src emacs-lisp
+  (require 'evil)
+  (evil-mode 1)
+
+  (require 'evil-collection)
+  (evil-collection-init)
+#+end_src
+
+*** Keybindings
+
+**** Cursor
+These remaps make the cursor stay centered in the screen while navigating.
+#+begin_src emacs-lisp
+  (general-create-definer nj/normal-keys
+    :states 'normal
+    :keymaps 'override)
+
+  (defun nj/scroll-down ()
+    (interactive)
+    (evil-scroll-down nil)
+    (evil-scroll-line-to-center nil))
+
+  (defun nj/scroll-up ()
+    (interactive)
+    (evil-scroll-up nil)
+    (evil-scroll-line-to-center nil))
+
+  (defun nj/search-next ()
+    (interactive)
+    (evil-search-next)
+    (evil-scroll-line-to-center nil))
+
+  (defun nj/search-previous ()
+    (interactive)
+    (evil-search-previous)
+    (evil-scroll-line-to-center nil))
+
+  (defun nj/up ()
+    (interactive)
+    (call-interactively 'evil-previous-line)
+    (evil-scroll-line-to-center nil))
+
+  (defun nj/down ()
+    (interactive)
+    (call-interactively 'evil-next-line)
+    (evil-scroll-line-to-center nil))
+
+  (nj/normal-keys
+    "C-u" 'nj/scroll-up
+    "C-d" 'nj/scroll-down
+    "k" 'nj/up
+    "j" 'nj/down
+    "n" 'nj/search-next
+    "N" 'nj/search-previous)
+#+end_src
+
+**** Visual Mode
+Stay in visual mode while indenting.
+#+begin_src emacs-lisp
+  (defun nj/indent-right ()
+    (interactive)
+    (evil-shift-right (region-beginning) (region-end))
+    (evil-normal-state)
+    (evil-visual-restore))
+
+  (defun nj/indent-left ()
+    (interactive)
+    (evil-shift-left (region-beginning) (region-end))
+    (evil-normal-state)
+    (evil-visual-restore))
+
+  (define-key evil-visual-state-map (kbd ">") 'nj/indent-right)
+  (define-key evil-visual-state-map (kbd "<") 'nj/indent-left)
+#+end_src
+
+** Yank
+Highlight text when yanking.
+#+begin_src emacs-lisp
+  (defun highlight-on-yank (orig-fn beg end &rest args)
+    (apply orig-fn beg end args)
+    (let ((ov (make-overlay beg end)))
+      (overlay-put ov 'face 'show-paren-mismatch)
+      (run-with-timer 0.040 nil 'delete-overlay ov)))
+
+  (advice-add 'evil-yank :around #'highlight-on-yank)
+#+end_src
+
+* Visuals
+#+begin_src emacs-lisp
+  (setq inhibit-startup-message t
+        inhibit-startup-screen t
+        initial-scratch-message nil
+        )
+
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (blink-cursor-mode -1)
+
+  (set-face-attribute 'default nil :weight 'bold)
+
+  (global-display-line-numbers-mode 1)
+  (global-visual-line-mode t)
+#+end_src
+
+* Keybindings
+#+begin_src emacs-lisp
+  (require 'general)
+  (general-evil-setup)
+
+  (general-create-definer nj/leader-keys
+    :states '(normal insert visual emacs)
+    :keymaps 'override
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+
+  (nj/leader-keys
+    "y" '((lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)) :wk "Yank to system clipboard")
+    "p" '((lambda () (interactive) (evil-paste-from-register ?+)) :wk "Paste from system clipboard"))
+#+end_src
+
+* WHICH-KEY
+#+begin_src emacs-lisp
+  (require 'which-key)
+  (which-key-mode 1)
+#+end_src
+
+* ORG MODE
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org (global-org-modern-mode))
+  (require 'org-tempo)
+#+end_src
+
+* Defaults
+#+begin_src emacs-lisp
+  (defalias 'yes-or-no-p 'y-or-n-p)
+  (setq display-line-numbers-type 'relative)
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+#+end_src

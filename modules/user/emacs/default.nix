@@ -13,6 +13,7 @@ in
     };
 
     config = lib.mkIf cfg.enable {
+        # stylix.targets.emacs.enable = false;
         programs.emacs = {
             enable = true;
             package = pkgs.emacs-pgtk;
@@ -20,21 +21,21 @@ in
                 epkgs: with epkgs; [
                     evil
                     evil-collection
+                    org
+                    org-modern
+                    general
+                    which-key
+                    undo-fu
+                    undo-fu-session
                 ];
             extraConfig = ''
-                    ;; 1. Set the flag BEFORE loading evil
-                (setq evil-want-minibuffer t)
-
-                ;; 2. Load evil
-                (require 'evil)
-                (evil-mode 1)
-
-                ;; 3. Optional: Better minibuffer keys via evil-collection
-                (setq evil-collection-setup-minibuffer t)
-                (with-eval-after-load 'evil
-                  (require 'evil-collection)
-                  (evil-collection-init))
+                (org-babel-load-file
+                (expand-file-name
+                "config.org"
+                user-emacs-directory))
             '';
         };
+
+        # home.file.".emacs.d/config.org".source = ./config.org;
     };
 }
