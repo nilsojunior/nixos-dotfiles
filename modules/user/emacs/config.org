@@ -1,13 +1,13 @@
 #+TITLE: Nilso's GNU Emacs Config
 #+AUTHOR: Nilso Junior
-#+DESCRIPTION: Nilso's Emacs config
+#+Description: Nilso's Emacs config
 
 * Evil Mode
 
 ** Before Evil
-TODO remap the default C-u which i don't know what it does.
 #+begin_src emacs-lisp
   (setq evil-want-C-u-scroll t
+        evil-want-C-u-delete t
         evil-want-keybinding nil
         select-enable-clipboard nil
         evil-shift-width 4
@@ -31,8 +31,12 @@ TODO remap the default C-u which i don't know what it does.
   (require 'evil)
   (evil-mode 1)
 
+  (setq evil-collection-setup-minibuffer t)
   (require 'evil-collection)
   (evil-collection-init)
+
+  (require 'evil-commentary)
+  (evil-commentary-mode 1)
 #+end_src
 
 *** Keybindings
@@ -40,10 +44,6 @@ TODO remap the default C-u which i don't know what it does.
 **** Cursor
 These remaps make the cursor stay centered in the screen while navigating.
 #+begin_src emacs-lisp
-  (general-create-definer nj/normal-keys
-    :states 'normal
-    :keymaps 'override)
-
   (defun nj/scroll-down ()
     (interactive)
     (evil-scroll-down nil)
@@ -74,13 +74,13 @@ These remaps make the cursor stay centered in the screen while navigating.
     (call-interactively 'evil-next-line)
     (evil-scroll-line-to-center nil))
 
-  (nj/normal-keys
-    "C-u" 'nj/scroll-up
-    "C-d" 'nj/scroll-down
-    "k" 'nj/up
-    "j" 'nj/down
-    "n" 'nj/search-next
-    "N" 'nj/search-previous)
+  (evil-define-key 'normal global-map
+    (kbd "C-u") 'nj/scroll-up
+    (kbd "C-d") 'nj/scroll-down
+    (kbd "k") 'nj/up
+    (kbd "j") 'nj/down
+    (kbd "n") 'nj/search-next
+    (kbd "N") 'nj/search-previous)
 #+end_src
 
 **** Visual Mode
@@ -116,11 +116,6 @@ Highlight text when yanking.
 
 * Visuals
 #+begin_src emacs-lisp
-  (setq inhibit-startup-message t
-        inhibit-startup-screen t
-        initial-scratch-message nil
-        )
-
   (menu-bar-mode -1)
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
@@ -129,7 +124,7 @@ Highlight text when yanking.
   (set-face-attribute 'default nil :weight 'bold)
 
   (global-display-line-numbers-mode 1)
-  (global-visual-line-mode t)
+  (global-visual-line-mode -1) ;; Disable line wrapping
 #+end_src
 
 * Keybindings
@@ -143,9 +138,24 @@ Highlight text when yanking.
     :prefix "SPC"
     :global-prefix "C-SPC")
 
+  (defun nj/compile-interactive ()
+    (interactive)
+    (let ((current-prefix-arg '(4)))
+      (call-interactively 'compile)))
+
   (nj/leader-keys
     "y" '((lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)) :wk "Yank to system clipboard")
-    "p" '((lambda () (interactive) (evil-paste-from-register ?+)) :wk "Paste from system clipboard"))
+    "p" '((lambda () (interactive) (evil-paste-from-register ?+)) :wk "Paste from system clipboard")
+    "fd" '(find-file :wk "Find file")
+    "fs" '(project-find-file :wk "Find project file")
+    "fa" '(project-switch-project :wk "Swtich projects")
+    "sd" '(shell-command :wk "Shell command")
+    "sf" '(async-shell-command :wk "Async shell command")
+    "cv" '(compile :wk "Compile")
+    "cf" '(nj/compile-interactive :wk "Compile interactive")
+    "h" '(help-command :wk "Help"))
+
+  (global-set-key (kbd "C-c") 'keyboard-escape-quit)
 #+end_src
 
 * WHICH-KEY
@@ -156,6 +166,7 @@ Highlight text when yanking.
 
 * ORG MODE
 #+begin_src emacs-lisp
+  (setq org-modern-star 'replace)
   (with-eval-after-load 'org (global-org-modern-mode))
   (require 'org-tempo)
 #+end_src
@@ -163,6 +174,29 @@ Highlight text when yanking.
 * Defaults
 #+begin_src emacs-lisp
   (defalias 'yes-or-no-p 'y-or-n-p)
-  (setq display-line-numbers-type 'relative)
+  (setq display-line-numbers-type 'relative
+        backup-directory-alist '(("." . "~/.emacs.d/backup")))
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
+
+  (set-fringe-mode 0)
+
+  (set-cursor-color (face-foreground 'default)) ;; Theme cursor based on colorscheme
+
+  (setq compilation-scroll-output t)
+
+  (require 'diredfl)
+  (diredfl-global-mode 1)
+  (set-face-attribute 'diredfl-date-time nil :weight 'unspecified :inherit 'default)
+
+  ;; (setq-default mode-line-format
+  ;;             '("%b"))
+#+end_src
+
+* Fido
+#+begin_src emacs-lisp
+  (fido-vertical-mode)
+  (evil-define-key 'insert icomplete-minibuffer-map
+    (kbd "C-k") 'icomplete-backward-completions)
+  (evil-define-key 'insert icomplete-minibuffer-map
+    (kbd "C-j") 'icomplete-forward-completions)
 #+end_src

@@ -21,12 +21,24 @@ in
                 epkgs: with epkgs; [
                     evil
                     evil-collection
+                    evil-commentary
                     org
                     org-modern
                     general
                     which-key
                     undo-fu
                     undo-fu-session
+
+                    diredfl
+                    mini-modeline
+
+                    # Languages
+                    nix-mode
+                    rust-mode
+                    go-mode
+                    lua-mode
+                    yaml-mode
+                    json-mode
                 ];
             extraConfig = ''
                 (org-babel-load-file
