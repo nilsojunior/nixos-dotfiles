@@ -120,11 +120,45 @@ Highlight text when yanking.
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
   (blink-cursor-mode -1)
+  (set-fringe-mode 0)
+
 
   (set-face-attribute 'default nil :weight 'bold)
 
   (global-display-line-numbers-mode 1)
   (global-visual-line-mode -1) ;; Disable line wrapping
+#+end_src
+
+** Face Attributes
+#+begin_src emacs-lisp
+  (set-cursor-color (face-foreground 'default)) ;; Theme cursor based on colorscheme
+
+  (set-face-attribute 'line-number nil
+                      :background (face-attribute 'default :background))
+  (set-face-attribute 'line-number-current-line nil
+                      :background (face-attribute 'default :background))
+  (set-face-attribute 'mode-line nil
+                      :background (face-attribute 'default :background))
+#+end_src
+
+** Mode Line
+#+begin_src emacs-lisp
+  (defun nj/buffer-name ()
+    (if (buffer-file-name)
+  	(if-let* ((p (project-current))
+  		  (p-root (project-root p))
+  		  (p-name (project-name p)))
+  	    (format "%s/%s" p-name
+  		    (file-relative-name (buffer-file-name) p-root))
+  	  (abbreviate-file-name (buffer-file-name)))
+      (buffer-name)))
+
+  (setq-default mode-line-format
+  	      '("%e"
+  		(" ")
+  		(:eval
+  		 (nj/buffer-name))
+  		))
 #+end_src
 
 * Keybindings
@@ -148,14 +182,12 @@ Highlight text when yanking.
     "p" '((lambda () (interactive) (evil-paste-from-register ?+)) :wk "Paste from system clipboard")
     "fd" '(find-file :wk "Find file")
     "fs" '(project-find-file :wk "Find project file")
-    "fa" '(project-switch-project :wk "Swtich projects")
+    "fa" '(project-switch-project :wk "Switch projects")
+    "fj" '(switch-to-buffer :wk "Switch buffers")
     "sd" '(shell-command :wk "Shell command")
     "sf" '(async-shell-command :wk "Async shell command")
     "cv" '(compile :wk "Compile")
-    "cf" '(nj/compile-interactive :wk "Compile interactive")
-    "h" '(help-command :wk "Help"))
-
-  (global-set-key (kbd "C-c") 'keyboard-escape-quit)
+    "cf" '(nj/compile-interactive :wk "Compile interactive"))
 #+end_src
 
 * WHICH-KEY
@@ -178,21 +210,15 @@ Highlight text when yanking.
         backup-directory-alist '(("." . "~/.emacs.d/backup")))
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-  (set-fringe-mode 0)
-
-  (set-cursor-color (face-foreground 'default)) ;; Theme cursor based on colorscheme
 
   (setq compilation-scroll-output t)
 
   (require 'diredfl)
   (diredfl-global-mode 1)
   (set-face-attribute 'diredfl-date-time nil :weight 'unspecified :inherit 'default)
-
-  ;; (setq-default mode-line-format
-  ;;             '("%b"))
 #+end_src
 
-* Fido
+* Completions
 #+begin_src emacs-lisp
   (fido-vertical-mode)
   (evil-define-key 'insert icomplete-minibuffer-map
