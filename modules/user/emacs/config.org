@@ -1,6 +1,6 @@
 #+TITLE: Nilso's GNU Emacs Config
 #+AUTHOR: Nilso Junior
-#+Description: Nilso's Emacs config
+#+DESCRIPTION: Nilso's Emacs config
 
 * Evil Mode
 
@@ -125,6 +125,7 @@ Highlight text when yanking.
 
   (set-face-attribute 'default nil :weight 'bold)
 
+  (setq display-line-numbers-type 'relative)
   (global-display-line-numbers-mode 1)
   (global-visual-line-mode -1) ;; Disable line wrapping
 #+end_src
@@ -137,7 +138,10 @@ Highlight text when yanking.
                       :background (face-attribute 'default :background))
   (set-face-attribute 'line-number-current-line nil
                       :background (face-attribute 'default :background))
+
   (set-face-attribute 'mode-line nil
+                      :background (face-attribute 'default :background))
+  (set-face-attribute 'mode-line-inactive nil
                       :background (face-attribute 'default :background))
 #+end_src
 
@@ -145,20 +149,20 @@ Highlight text when yanking.
 #+begin_src emacs-lisp
   (defun nj/buffer-name ()
     (if (buffer-file-name)
-  	(if-let* ((p (project-current))
-  		  (p-root (project-root p))
-  		  (p-name (project-name p)))
-  	    (format "%s/%s" p-name
-  		    (file-relative-name (buffer-file-name) p-root))
-  	  (abbreviate-file-name (buffer-file-name)))
+        (if-let* ((p (project-current))
+  		(p-root (project-root p))
+  		(p-name (project-name p)))
+  	  (format "%s/%s" p-name
+  		  (file-relative-name (buffer-file-name) p-root))
+  	(abbreviate-file-name (buffer-file-name)))
       (buffer-name)))
 
   (setq-default mode-line-format
   	      '("%e"
   		(" ")
-  		(:eval
-  		 (nj/buffer-name))
-  		))
+  		(:propertize
+  		 (:eval (nj/buffer-name))
+  		 face (:inherit default))))
 #+end_src
 
 * Keybindings
@@ -187,6 +191,7 @@ Highlight text when yanking.
     "sd" '(shell-command :wk "Shell command")
     "sf" '(async-shell-command :wk "Async shell command")
     "cv" '(compile :wk "Compile")
+    "ca" '(recompile :wk "Recompile")
     "cf" '(nj/compile-interactive :wk "Compile interactive"))
 #+end_src
 
@@ -201,15 +206,23 @@ Highlight text when yanking.
   (setq org-modern-star 'replace)
   (with-eval-after-load 'org (global-org-modern-mode))
   (require 'org-tempo)
-#+end_src
+  #+end_src
 
 * Defaults
 #+begin_src emacs-lisp
-  (defalias 'yes-or-no-p 'y-or-n-p)
-  (setq display-line-numbers-type 'relative
-        backup-directory-alist '(("." . "~/.emacs.d/backup")))
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+  (make-directory (expand-file-name "backup/" user-emacs-directory) t)
+  (make-directory (expand-file-name "auto-save/" user-emacs-directory) t)
+  (make-directory (expand-file-name "lock/" user-emacs-directory) t)
 
+  (setq backup-directory-alist
+  	`(("." . ,(expand-file-name "backup/" user-emacs-directory)))
+  	auto-save-file-name-transforms
+  	`((".*" ,(expand-file-name "auto-save/" user-emacs-directory) t))
+  	lock-file-name-transforms
+  	`((".*" ,(expand-file-name "lock/" user-emacs-directory) t))
+  	use-short-answers t)
+
+  (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
   (setq compilation-scroll-output t)
 
