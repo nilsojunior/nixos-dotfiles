@@ -13,7 +13,7 @@ in
     };
 
     config = lib.mkIf cfg.enable {
-        stylix.targets.emacs.enable = false;
+        # stylix.targets.emacs.enable = false;
         programs.emacs = {
             enable = true;
             package = pkgs.emacs-pgtk;
@@ -30,6 +30,7 @@ in
                     undo-fu-session
 
                     diredfl
+                    xterm-color
 
                     # Languages
                     nix-mode

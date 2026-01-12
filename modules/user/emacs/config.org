@@ -2,17 +2,31 @@
 #+AUTHOR: Nilso Junior
 #+DESCRIPTION: Nilso's Emacs config
 
-* Evil Mode
+* Startup
+#+begin_src emacs-lisp
+  (setq inhibit-message t) ;; Remove messages for startup
 
+  (defun nj/restore-message ()
+    (setq inhibit-message nil)
+    (remove-hook 'emcas-startup-hook 'nj/restore-message))
+
+  (add-hook 'emacs-startup-hook 'nj/restore-message) ;; Restore message and remove hook
+
+  (setq initial-buffer-choice nil
+        inhibit-x-resources t)
+#+end_src
+
+* Evil Mode
 ** Before Evil
 #+begin_src emacs-lisp
   (setq evil-want-C-u-scroll t
         evil-want-C-u-delete t
+        evil-want-Y-yank-to-eol t
         evil-want-keybinding nil
         select-enable-clipboard nil
         evil-shift-width 4
         evil-insert-state-cursor '(box))
-#+end_src
+  #+end_src
 
 *** Undo
 #+begin_src emacs-lisp
@@ -80,6 +94,7 @@ These remaps make the cursor stay centered in the screen while navigating.
     (kbd "k") 'nj/up
     (kbd "j") 'nj/down
     (kbd "n") 'nj/search-next
+    (kbd "C-p") 'universal-argument
     (kbd "N") 'nj/search-previous)
 #+end_src
 
@@ -122,12 +137,12 @@ Highlight text when yanking.
   (blink-cursor-mode -1)
   (set-fringe-mode 0)
 
-
   (set-face-attribute 'default nil :weight 'bold)
 
   (setq display-line-numbers-type 'relative)
   (global-display-line-numbers-mode 1)
   (global-visual-line-mode -1) ;; Disable line wrapping
+  (setq-default truncate-lines t)
 #+end_src
 
 ** Face Attributes
@@ -136,11 +151,14 @@ Highlight text when yanking.
 
   (set-face-attribute 'line-number nil
                       :background (face-attribute 'default :background))
+
   (set-face-attribute 'line-number-current-line nil
                       :background (face-attribute 'default :background))
 
   (set-face-attribute 'mode-line nil
-                      :background (face-attribute 'default :background))
+                      :background (face-attribute 'default :background)
+  		    :foreground (face-attribute 'default :foreground))
+
   (set-face-attribute 'mode-line-inactive nil
                       :background (face-attribute 'default :background))
 #+end_src
@@ -152,7 +170,8 @@ Highlight text when yanking.
         (if-let* ((p (project-current))
   		(p-root (project-root p))
   		(p-name (project-name p)))
-  	  (format "%s/%s" p-name
+  	  ;; (format "%s/%s" p-name
+  	  (format "%s"
   		  (file-relative-name (buffer-file-name) p-root))
   	(abbreviate-file-name (buffer-file-name)))
       (buffer-name)))
@@ -162,8 +181,8 @@ Highlight text when yanking.
   		(" ")
   		(:propertize
   		 (:eval (nj/buffer-name))
-  		 face (:inherit default))))
-#+end_src
+  		 )))
+    #+end_src
 
 * Keybindings
 #+begin_src emacs-lisp
@@ -176,11 +195,6 @@ Highlight text when yanking.
     :prefix "SPC"
     :global-prefix "C-SPC")
 
-  (defun nj/compile-interactive ()
-    (interactive)
-    (let ((current-prefix-arg '(4)))
-      (call-interactively 'compile)))
-
   (nj/leader-keys
     "y" '((lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)) :wk "Yank to system clipboard")
     "p" '((lambda () (interactive) (evil-paste-from-register ?+)) :wk "Paste from system clipboard")
@@ -188,25 +202,25 @@ Highlight text when yanking.
     "fs" '(project-find-file :wk "Find project file")
     "fa" '(project-switch-project :wk "Switch projects")
     "fj" '(switch-to-buffer :wk "Switch buffers")
+    "fk" '(recentf :wk "Recent file")
     "sd" '(shell-command :wk "Shell command")
     "sf" '(async-shell-command :wk "Async shell command")
-    "cv" '(compile :wk "Compile")
-    "ca" '(recompile :wk "Recompile")
-    "cf" '(nj/compile-interactive :wk "Compile interactive"))
-#+end_src
+    "cf" '(recompile :wk "Recompile")
+    "cv" '(compile :wk "Compile"))
+    #+end_src
 
 * WHICH-KEY
 #+begin_src emacs-lisp
   (require 'which-key)
   (which-key-mode 1)
-#+end_src
+    #+end_src
 
 * ORG MODE
 #+begin_src emacs-lisp
   (setq org-modern-star 'replace)
   (with-eval-after-load 'org (global-org-modern-mode))
   (require 'org-tempo)
-  #+end_src
+#+end_src
 
 * Defaults
 #+begin_src emacs-lisp
@@ -215,27 +229,53 @@ Highlight text when yanking.
   (make-directory (expand-file-name "lock/" user-emacs-directory) t)
 
   (setq backup-directory-alist
-  	`(("." . ,(expand-file-name "backup/" user-emacs-directory)))
-  	auto-save-file-name-transforms
-  	`((".*" ,(expand-file-name "auto-save/" user-emacs-directory) t))
-  	lock-file-name-transforms
-  	`((".*" ,(expand-file-name "lock/" user-emacs-directory) t))
-  	use-short-answers t)
+        `(("." . ,(expand-file-name "backup/" user-emacs-directory)))
+        auto-save-file-name-transforms
+        `((".*" ,(expand-file-name "auto-save/" user-emacs-directory) t))
+        lock-file-name-transforms
+        `((".*" ,(expand-file-name "lock/" user-emacs-directory) t))
+        use-short-answers t)
 
   (add-hook 'before-save-hook 'delete-trailing-whitespace)
 
+  (savehist-mode 1)
+
   (setq compilation-scroll-output t)
+  (setq-default compile-command '(car compile-history)) ;; Last compile command will be the default
+    #+end_src
+
+* Dired
+#+begin_src emacs-lisp
+  ;; (setq dired-recursive-deletes 'always
+  ;; 	dired-recursive-copies 'always)
+  (setq dired-listing-switches "-lahv --group-directories-first"
+        dired-kill-when-opening-new-dired-buffer t)
 
   (require 'diredfl)
   (diredfl-global-mode 1)
   (set-face-attribute 'diredfl-date-time nil :weight 'unspecified :inherit 'default)
-#+end_src
+	#+end_src
 
 * Completions
+This will go to the next line or previous if fido-vertica-mode is enabled. Otherwise it will navigate history.
 #+begin_src emacs-lisp
   (fido-vertical-mode)
-  (evil-define-key 'insert icomplete-minibuffer-map
-    (kbd "C-k") 'icomplete-backward-completions)
-  (evil-define-key 'insert icomplete-minibuffer-map
+  (evil-define-key 'insert icomplete-fido-mode-map
+    (kbd "C-k") 'icomplete-backward-completions
     (kbd "C-j") 'icomplete-forward-completions)
-#+end_src
+
+  (evil-define-key 'insert minibuffer-local-map
+    (kbd "C-k") 'previous-line-or-history-element
+    (kbd "C-j") 'next-line-or-history-element)
+    #+end_src
+
+* Test
+#+begin_src emacs-lisp
+  (require 'ansi-color)
+
+  (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+  (setq ansi-color-for-compilation-mode t)
+
+  (add-hook 'comint-output-filter-functions 'ansi-color-process-output)
+  (setq ansi-color-for-comint-mode t)
+    #+end_src
