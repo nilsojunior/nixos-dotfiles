@@ -25,12 +25,15 @@ in
                     org
                     org-modern
                     general
-                    which-key
                     undo-fu
                     undo-fu-session
 
                     diredfl
-                    xterm-color
+                    vertico
+                    consult
+                    orderless
+                    corfu
+                    cape
 
                     # Languages
                     nix-mode

@@ -2,23 +2,29 @@
 #+AUTHOR: Nilso Junior
 #+DESCRIPTION: Nilso's Emacs config
 
+* Early-Init
+#+begin_src emacs-lisp :tangle early-init.el
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+
+  (setq inhibit-message t ;; Remove messages for startup
+        initial-buffer-choice nil
+        inhibit-x-resources t)
+#+end_src
 * Startup
 #+begin_src emacs-lisp
-  (setq inhibit-message t) ;; Remove messages for startup
-
   (defun nj/restore-message ()
     (setq inhibit-message nil)
     (remove-hook 'emcas-startup-hook 'nj/restore-message))
 
   (add-hook 'emacs-startup-hook 'nj/restore-message) ;; Restore message and remove hook
-
-  (setq initial-buffer-choice nil
-        inhibit-x-resources t)
 #+end_src
 
 * Evil Mode
 ** Before Evil
 #+begin_src emacs-lisp
+  (setq-default tab-width 4)
   (setq evil-want-C-u-scroll t
         evil-want-C-u-delete t
         evil-want-Y-yank-to-eol t
@@ -131,13 +137,8 @@ Highlight text when yanking.
 
 * Visuals
 #+begin_src emacs-lisp
-  (menu-bar-mode -1)
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
   (blink-cursor-mode -1)
   (set-fringe-mode 0)
-
-  (set-face-attribute 'default nil :weight 'bold)
 
   (setq display-line-numbers-type 'relative)
   (global-display-line-numbers-mode 1)
@@ -149,18 +150,21 @@ Highlight text when yanking.
 #+begin_src emacs-lisp
   (set-cursor-color (face-foreground 'default)) ;; Theme cursor based on colorscheme
 
-  (set-face-attribute 'line-number nil
-                      :background (face-attribute 'default :background))
+  (set-face-attribute 'default nil :weight 'bold)
 
-  (set-face-attribute 'line-number-current-line nil
-                      :background (face-attribute 'default :background))
+  (defun nj/inherit-background (faces)
+    (dolist (face faces)
+      (set-face-attribute face nil
+  						:inherit 'default
+  						:background 'unspecified)))
 
-  (set-face-attribute 'mode-line nil
-                      :background (face-attribute 'default :background)
-  		    :foreground (face-attribute 'default :foreground))
-
-  (set-face-attribute 'mode-line-inactive nil
-                      :background (face-attribute 'default :background))
+  (nj/inherit-background
+   '(fringe
+     tooltip
+     line-number
+     line-number-current-line
+     mode-line
+     mode-line-inactive))
 #+end_src
 
 ** Mode Line
@@ -168,21 +172,21 @@ Highlight text when yanking.
   (defun nj/buffer-name ()
     (if (buffer-file-name)
         (if-let* ((p (project-current))
-  		(p-root (project-root p))
-  		(p-name (project-name p)))
-  	  ;; (format "%s/%s" p-name
-  	  (format "%s"
-  		  (file-relative-name (buffer-file-name) p-root))
-  	(abbreviate-file-name (buffer-file-name)))
+  				(p-root (project-root p))
+  				(p-name (project-name p)))
+  		  ;; (format "%s/%s" p-name
+  		  (format "%s"
+  				  (file-relative-name (buffer-file-name) p-root))
+  		(abbreviate-file-name (buffer-file-name)))
       (buffer-name)))
 
   (setq-default mode-line-format
-  	      '("%e"
-  		(" ")
-  		(:propertize
-  		 (:eval (nj/buffer-name))
-  		 )))
-    #+end_src
+  			  '("%e"
+  				(" ")
+  				(:propertize
+  				 (:eval (nj/buffer-name))
+  				 )))
+#+end_src
 
 * Keybindings
 #+begin_src emacs-lisp
@@ -197,7 +201,6 @@ Highlight text when yanking.
 
   (nj/leader-keys
     "y" '((lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)) :wk "Yank to system clipboard")
-    "p" '((lambda () (interactive) (evil-paste-from-register ?+)) :wk "Paste from system clipboard")
     "fd" '(find-file :wk "Find file")
     "fs" '(project-find-file :wk "Find project file")
     "fa" '(project-switch-project :wk "Switch projects")
@@ -207,13 +210,19 @@ Highlight text when yanking.
     "sf" '(async-shell-command :wk "Async shell command")
     "cf" '(recompile :wk "Recompile")
     "cv" '(compile :wk "Compile"))
-    #+end_src
+
+  (defun nj/paste-from-system ()
+    (interactive)
+    (evil-paste-from-register ?+))
+
+  (keymap-set global-map "C-S-V" 'nj/paste-from-system)
+#+end_src
 
 * WHICH-KEY
 #+begin_src emacs-lisp
   (require 'which-key)
   (which-key-mode 1)
-    #+end_src
+#+end_src
 
 * ORG MODE
 #+begin_src emacs-lisp
@@ -236,29 +245,34 @@ Highlight text when yanking.
         `((".*" ,(expand-file-name "lock/" user-emacs-directory) t))
         use-short-answers t)
 
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
-
-  (savehist-mode 1)
-
   (setq compilation-scroll-output t)
   (setq-default compile-command '(car compile-history)) ;; Last compile command will be the default
-    #+end_src
+
+  (defun nj/format-buffer ()
+    (indent-region (point-min) (point-max))
+    (delete-trailing-whitespace))
+
+  (add-hook 'before-save-hook 'nj/format-buffer)
+#+end_src
 
 * Dired
 #+begin_src emacs-lisp
   ;; (setq dired-recursive-deletes 'always
   ;; 	dired-recursive-copies 'always)
   (setq dired-listing-switches "-lahv --group-directories-first"
-        dired-kill-when-opening-new-dired-buffer t)
+        dired-kill-when-opening-new-dired-buffer t
+        dired-auto-revert-buffer t)
 
   (require 'diredfl)
   (diredfl-global-mode 1)
   (set-face-attribute 'diredfl-date-time nil :weight 'unspecified :inherit 'default)
-	#+end_src
+#+end_src
 
 * Completions
 This will go to the next line or previous if fido-vertica-mode is enabled. Otherwise it will navigate history.
 #+begin_src emacs-lisp
+  (savehist-mode 1)
+
   (fido-vertical-mode)
   (evil-define-key 'insert icomplete-fido-mode-map
     (kbd "C-k") 'icomplete-backward-completions
@@ -267,9 +281,9 @@ This will go to the next line or previous if fido-vertica-mode is enabled. Other
   (evil-define-key 'insert minibuffer-local-map
     (kbd "C-k") 'previous-line-or-history-element
     (kbd "C-j") 'next-line-or-history-element)
-    #+end_src
+#+end_src
 
-* Test
+* Ansi Colours
 #+begin_src emacs-lisp
   (require 'ansi-color)
 
@@ -278,4 +292,42 @@ This will go to the next line or previous if fido-vertica-mode is enabled. Other
 
   (add-hook 'comint-output-filter-functions 'ansi-color-process-output)
   (setq ansi-color-for-comint-mode t)
+#+end_src
+
+* Buffer Completions
+#+begin_src emacs-lisp
+  (require 'corfu)
+  (global-corfu-mode)
+  (corfu-history-mode)
+  (corfu-popupinfo-mode)
+
+  (require 'cape)
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block)
+
+  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
+  ;; commands are hidden, since they are not used via M-x. This setting is
+  ;; useful beyond Corfu.
+  (setq read-extended-command-predicate #'command-completion-default-include-p)
+
+  (setq corfu-auto t
+        corfu-auto-delay 0.15
+        corfu-echo-delay 0.15
+        corfu-auto-prefix 2 ;; Start completion after 2 characters
+        corfu-popupinfo-direction '(right)
+        corfu-border-width 2
+   	  corfu-bar-width 0 ;; Disable scroll bar
+        corfu-popupinfo-delay nil ;; We use manual toggle
+        tab-always-indent 'complete ;; just TAB will trigger completion instead of M-TAB
+        text-mode-ispell-word-completion nil ;; Not sure
+        )
+
+  (keymap-unset corfu-map "RET")
+  (keymap-set corfu-map "C-<return>" 'corfu-insert)
+  (evil-collection-define-key 'insert 'corfu-map
+    (kbd "C-u") nil
+    (kbd "C-d") 'corfu-popupinfo-toggle
+    (kbd "C-n") 'corfu-popupinfo-scroll-up
+    (kbd "C-p") 'corfu-popupinfo-scroll-down)
     #+end_src

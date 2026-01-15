@@ -1,3 +1,3 @@
 build:
-    git add *.nix
+    git add .
     sudo nixos-rebuild switch --flake .#nixing

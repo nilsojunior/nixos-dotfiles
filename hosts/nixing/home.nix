@@ -38,6 +38,7 @@
         emacs.enable = true;
         stylix = {
             enable = true;
+            theme = "rose-pine-moon";
         };
     };
 
