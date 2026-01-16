@@ -24,7 +24,9 @@
 * Evil Mode
 ** Before Evil
 #+begin_src emacs-lisp
-  (setq-default tab-width 4)
+  (setq-default indent-tabs-mode nil
+                tab-width 4)
+
   (setq evil-want-C-u-scroll t
         evil-want-C-u-delete t
         evil-want-Y-yank-to-eol t
@@ -32,7 +34,7 @@
         select-enable-clipboard nil
         evil-shift-width 4
         evil-insert-state-cursor '(box))
-  #+end_src
+#+end_src
 
 *** Undo
 #+begin_src emacs-lisp
@@ -94,13 +96,28 @@ These remaps make the cursor stay centered in the screen while navigating.
     (call-interactively 'evil-next-line)
     (evil-scroll-line-to-center nil))
 
+  (defun nj/insert-blank-line-above (n)
+    (interactive "p")
+    (save-excursion
+      (beginning-of-line)
+      (open-line n))
+    (when (bolp) (forward-char n)))
+
+  (defun nj/insert-blank-line-below (n)
+    (interactive "p")
+    (save-excursion
+      (end-of-line)
+      (open-line n)))
+
   (evil-define-key 'normal global-map
     (kbd "C-u") 'nj/scroll-up
     (kbd "C-d") 'nj/scroll-down
     (kbd "k") 'nj/up
     (kbd "j") 'nj/down
-    (kbd "n") 'nj/search-next
     (kbd "C-p") 'universal-argument
+    (kbd "C-a") 'nj/insert-blank-line-below
+    (kbd "C-S-a") 'nj/insert-blank-line-above
+    (kbd "n") 'nj/search-next
     (kbd "N") 'nj/search-previous)
 #+end_src
 
@@ -152,6 +169,15 @@ Highlight text when yanking.
 
   (set-face-attribute 'default nil :weight 'bold)
 
+  ;; (set-face-attribute 'mode-line nil
+  ;; 					:inherit 'default
+  ;; :background 'unspecified
+  ;; :foreground 'unspecified)
+
+  (set-face-attribute 'mode-line-inactive nil
+  					:inherit 'mode-line
+  					:background 'unspecified)
+
   (defun nj/inherit-background (faces)
     (dolist (face faces)
       (set-face-attribute face nil
@@ -162,9 +188,8 @@ Highlight text when yanking.
    '(fringe
      tooltip
      line-number
-     line-number-current-line
-     mode-line
-     mode-line-inactive))
+     line-number-current-line))
+  ;; mode-line-inactive))
 #+end_src
 
 ** Mode Line
@@ -201,6 +226,7 @@ Highlight text when yanking.
 
   (nj/leader-keys
     "y" '((lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)) :wk "Yank to system clipboard")
+    "Y" '((lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)) :wk "Yank to system clipboard")
     "fd" '(find-file :wk "Find file")
     "fs" '(project-find-file :wk "Find project file")
     "fa" '(project-switch-project :wk "Switch projects")
@@ -250,6 +276,7 @@ Highlight text when yanking.
 
   (defun nj/format-buffer ()
     (indent-region (point-min) (point-max))
+    (message "writingasdf")
     (delete-trailing-whitespace))
 
   (add-hook 'before-save-hook 'nj/format-buffer)
@@ -314,14 +341,13 @@ This will go to the next line or previous if fido-vertica-mode is enabled. Other
   (setq corfu-auto t
         corfu-auto-delay 0.15
         corfu-echo-delay 0.15
-        corfu-auto-prefix 2 ;; Start completion after 2 characters
-        corfu-popupinfo-direction '(right)
-        corfu-border-width 2
-   	  corfu-bar-width 0 ;; Disable scroll bar
-        corfu-popupinfo-delay nil ;; We use manual toggle
-        tab-always-indent 'complete ;; just TAB will trigger completion instead of M-TAB
-        text-mode-ispell-word-completion nil ;; Not sure
-        )
+  	  corfu-auto-prefix 2 ;; Start completion after 2 characters
+  	  corfu-popupinfo-direction '(right)
+  	  corfu-border-width 2
+  	  corfu-bar-width 0 ;; Disable scroll bar
+  	  corfu-popupinfo-delay nil ;; We use manual toggle
+  	  tab-always-indent 'complete ;; just TAB will trigger completion instead of M-TAB
+  	  text-mode-ispell-word-completion nil) ;; Not sure
 
   (keymap-unset corfu-map "RET")
   (keymap-set corfu-map "C-<return>" 'corfu-insert)
@@ -330,4 +356,15 @@ This will go to the next line or previous if fido-vertica-mode is enabled. Other
     (kbd "C-d") 'corfu-popupinfo-toggle
     (kbd "C-n") 'corfu-popupinfo-scroll-up
     (kbd "C-p") 'corfu-popupinfo-scroll-down)
-    #+end_src
+#+end_src
+
+* Languagues
+
+#+begin_src emacs-lisp
+  (setq nix-ts-mode-indent-offset 4
+        rust-ts-mode-indent-offset 4)
+
+  (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.lua\\'" . lua-ts-mode))
+#+end_src
