@@ -8,17 +8,14 @@
   (tool-bar-mode -1)
   (scroll-bar-mode -1)
 
-  (setq inhibit-message t ;; Remove messages for startup
-        initial-buffer-choice nil
+  (setq initial-buffer-choice nil
         inhibit-x-resources t)
 #+end_src
-* Startup
-#+begin_src emacs-lisp
-  (defun nj/restore-message ()
-    (setq inhibit-message nil)
-    (remove-hook 'emcas-startup-hook 'nj/restore-message))
 
-  (add-hook 'emacs-startup-hook 'nj/restore-message) ;; Restore message and remove hook
+Disable startup message
+#+begin_src emacs-lisp :tangle early-init.el
+  (defun display-startup-echo-area-message ()
+    (message ""))
 #+end_src
 
 * Evil Mode
@@ -63,8 +60,7 @@
 
 *** Keybindings
 
-**** Cursor
-These remaps make the cursor stay centered in the screen while navigating.
+These remaps make the cursor stay centered in the screen while navigating
 #+begin_src emacs-lisp
   (defun nj/scroll-down ()
     (interactive)
@@ -114,15 +110,16 @@ These remaps make the cursor stay centered in the screen while navigating.
     (kbd "C-d") 'nj/scroll-down
     (kbd "k") 'nj/up
     (kbd "j") 'nj/down
+    (kbd "n") 'nj/search-next
+    (kbd "N") 'nj/search-previous
     (kbd "C-p") 'universal-argument
     (kbd "C-a") 'nj/insert-blank-line-below
     (kbd "C-S-a") 'nj/insert-blank-line-above
-    (kbd "n") 'nj/search-next
-    (kbd "N") 'nj/search-previous)
+    (kbd "C-k") 'previous-error
+    (kbd "C-j") 'next-error)
 #+end_src
 
-**** Visual Mode
-Stay in visual mode while indenting.
+Stay in visual mode while indenting
 #+begin_src emacs-lisp
   (defun nj/indent-right ()
     (interactive)
@@ -141,7 +138,7 @@ Stay in visual mode while indenting.
 #+end_src
 
 ** Yank
-Highlight text when yanking.
+Highlight text when yanking
 #+begin_src emacs-lisp
   (defun highlight-on-yank (orig-fn beg end &rest args)
     (apply orig-fn beg end args)
@@ -154,21 +151,21 @@ Highlight text when yanking.
 
 * Visuals
 #+begin_src emacs-lisp
-  (blink-cursor-mode -1)
+  (blink-cursor-mode 0)
   (set-fringe-mode 0)
 
   (setq display-line-numbers-type 'relative)
   (global-display-line-numbers-mode 1)
-  (global-visual-line-mode -1) ;; Disable line wrapping
   (setq-default truncate-lines t)
+#+end_src
+
+Disable line wrapping
+#+begin_src emacs-lisp
+  (global-visual-line-mode 0)
 #+end_src
 
 ** Face Attributes
 #+begin_src emacs-lisp
-  (set-cursor-color (face-foreground 'default)) ;; Theme cursor based on colorscheme
-
-  (set-face-attribute 'default nil :weight 'bold)
-
   ;; (set-face-attribute 'mode-line nil
   ;; 					:inherit 'default
   ;; :background 'unspecified
@@ -177,6 +174,16 @@ Highlight text when yanking.
   (set-face-attribute 'mode-line-inactive nil
   					:inherit 'mode-line
   					:background 'unspecified)
+
+  (set-face-attribute 'mode-line nil
+  					:inherit 'mode-line
+  					:background "#131520")
+
+  (set-face-attribute 'line-number-current-line nil
+  					:inherit 'font-lock-constant-face
+  					:background 'unspecified)
+
+  (set-cursor-color (face-foreground 'font-lock-constant-face))
 
   (defun nj/inherit-background (faces)
     (dolist (face faces)
@@ -187,9 +194,19 @@ Highlight text when yanking.
   (nj/inherit-background
    '(fringe
      tooltip
-     line-number
-     line-number-current-line))
-  ;; mode-line-inactive))
+     line-number))
+  ;; line-number-current-line
+  ;; mode-line-inactive
+#+end_src
+
+Theme cursor based on colorschme
+#+begin_src emacs-lisp
+  ;; (set-cursor-color (face-foreground 'default))
+#+end_src
+
+Make the default font bold
+#+begin_src emacs-lisp
+  (set-face-attribute 'default nil :weight 'bold)
 #+end_src
 
 ** Mode Line
@@ -214,6 +231,7 @@ Highlight text when yanking.
 #+end_src
 
 * Keybindings
+Maybe I want buffer navigation keybinds?
 #+begin_src emacs-lisp
   (require 'general)
   (general-evil-setup)
@@ -224,18 +242,32 @@ Highlight text when yanking.
     :prefix "SPC"
     :global-prefix "C-SPC")
 
+  (defun nj/project-switch-find-file ()
+    "Switch projects and instantly look for a file."
+    (interactive)
+    (let* ((project (project-prompt-project-dir))
+           (default-directory project))
+      (project-find-file)))
+
   (nj/leader-keys
     "y" '((lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)) :wk "Yank to system clipboard")
     "Y" '((lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)) :wk "Yank to system clipboard")
-    "fd" '(find-file :wk "Find file")
-    "fs" '(project-find-file :wk "Find project file")
-    "fa" '(project-switch-project :wk "Switch projects")
-    "fj" '(switch-to-buffer :wk "Switch buffers")
-    "fk" '(recentf :wk "Recent file")
-    "sd" '(shell-command :wk "Shell command")
-    "sf" '(async-shell-command :wk "Async shell command")
-    "cf" '(recompile :wk "Recompile")
-    "cv" '(compile :wk "Compile"))
+    "d" '(:ignore t :wk "Project")
+    "df" '(project-find-file :wk "Find File")
+    "dp" '(nj/project-switch-find-file :wk "Switch Projects")
+    "dk" '(project-compile :wk "Compile")
+    "dj" '(project-recompile :wk "Recompile")
+    "db" '(project-switch-to-buffer :wk "Switch Buffers")
+    "ds" '(project-shell-command :wk "Shell Command")
+    "da" '(project-async-shell-command :wk "Async Shell Command")
+    "f"  '(:ignore t :wk "Find")
+    "fj" '(switch-to-buffer :wk "Switch Buffers")
+    "fk" '(recentf :wk "Recent File")
+    "fi" '(imenu :wk "Imenu")
+    "sd" '(shell-command :wk "Shell Command")
+    "sf" '(async-shell-command :wk "Async Shell Command")
+    "cj" '(recompile :wk "Recompile")
+    "ck" '(compile :wk "Compile"))
 
   (defun nj/paste-from-system ()
     (interactive)
@@ -252,9 +284,17 @@ Highlight text when yanking.
 
 * ORG MODE
 #+begin_src emacs-lisp
-  (setq org-modern-star 'replace)
+  (setq org-modern-star 'replace
+        org-ellipsis " ▾")
+  ;; org-hide-emphasis-markers t
   (with-eval-after-load 'org (global-org-modern-mode))
   (require 'org-tempo)
+#+end_src
+
+Make ellipsis use the same color as the header
+#+begin_src emacs-lisp
+  (set-face-attribute 'org-ellipsis nil
+                      :foreground 'unspecified)
 #+end_src
 
 * Defaults
@@ -272,7 +312,6 @@ Highlight text when yanking.
         use-short-answers t)
 
   (setq compilation-scroll-output t)
-  (setq-default compile-command '(car compile-history)) ;; Last compile command will be the default
 
   (defun nj/format-buffer ()
     (indent-region (point-min) (point-max))
@@ -280,6 +319,14 @@ Highlight text when yanking.
     (delete-trailing-whitespace))
 
   (add-hook 'before-save-hook 'nj/format-buffer)
+
+  ;; (require 'centered-cursor-mode)
+  ;; (global-centered-cursor-mode)
+#+end_src
+
+Last compile command will be the default
+#+begin_src emacs-lisp
+  (setq-default compile-command '(car compile-history))
 #+end_src
 
 * Dired
@@ -299,6 +346,7 @@ Highlight text when yanking.
 This will go to the next line or previous if fido-vertica-mode is enabled. Otherwise it will navigate history.
 #+begin_src emacs-lisp
   (savehist-mode 1)
+  (recentf-mode 1)
 
   (fido-vertical-mode)
   (evil-define-key 'insert icomplete-fido-mode-map
@@ -311,14 +359,15 @@ This will go to the next line or previous if fido-vertica-mode is enabled. Other
 #+end_src
 
 * Ansi Colours
+Using xterm instead
 #+begin_src emacs-lisp
-  (require 'ansi-color)
+  ;; (require 'ansi-color)
 
-  (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
-  (setq ansi-color-for-compilation-mode t)
+  ;; (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+  ;; (setq ansi-color-for-compilation-mode t)
 
-  (add-hook 'comint-output-filter-functions 'ansi-color-process-output)
-  (setq ansi-color-for-comint-mode t)
+  ;; (add-hook 'comint-output-filter-functions 'ansi-color-process-output)
+  ;; (setq ansi-color-for-comint-mode t)
 #+end_src
 
 * Buffer Completions
@@ -333,21 +382,12 @@ This will go to the next line or previous if fido-vertica-mode is enabled. Other
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-elisp-block)
 
-  ;; Hide commands in M-x which do not apply to the current mode.  Corfu
-  ;; commands are hidden, since they are not used via M-x. This setting is
-  ;; useful beyond Corfu.
-  (setq read-extended-command-predicate #'command-completion-default-include-p)
-
-  (setq corfu-auto t
-        corfu-auto-delay 0.15
+  (setq corfu-auto-delay 0.15
         corfu-echo-delay 0.15
-  	  corfu-auto-prefix 2 ;; Start completion after 2 characters
-  	  corfu-popupinfo-direction '(right)
-  	  corfu-border-width 2
-  	  corfu-bar-width 0 ;; Disable scroll bar
-  	  corfu-popupinfo-delay nil ;; We use manual toggle
-  	  tab-always-indent 'complete ;; just TAB will trigger completion instead of M-TAB
-  	  text-mode-ispell-word-completion nil) ;; Not sure
+        corfu-popupinfo-direction '(right)
+        corfu-border-width 2
+        ;; corfu-auto t
+        text-mode-ispell-word-completion nil) ;; Not sure
 
   (keymap-unset corfu-map "RET")
   (keymap-set corfu-map "C-<return>" 'corfu-insert)
@@ -358,13 +398,110 @@ This will go to the next line or previous if fido-vertica-mode is enabled. Other
     (kbd "C-p") 'corfu-popupinfo-scroll-down)
 #+end_src
 
-* Languagues
+Hide commands in M-x which do not apply to the current mode.
+Corfu commands are hidden, since they are not used via M-x.
+This setting is useful beyond Corfu.
+#+begin_src emacs-lisp
+  (setq read-extended-command-predicate #'command-completion-default-include-p)
+#+end_src
+
+Start completion after 2 characters
+#+begin_src emacs-lisp
+  (setq corfu-auto-prefix 2)
+#+end_src
+
+Disable scroll bar
+#+begin_src emacs-lisp
+  (setq corfu-bar-width 0)
+#+end_src
+
+We use manual toggle
+#+begin_src emacs-lisp
+  (setq corfu-popupinfo-delay nil)
+#+end_src
+
+Just TAB will trigger completion instead of M-TAB
+#+begin_src emacs-lisp
+  (setq tab-always-indent 'complete)
+#+end_src
+
+* Treesitter
+For some reason I have to require this so things that use `rust-mode` work.
+Otherwise I can't jump between erros in the compilation buffer.
+#+begin_src emacs-lisp
+  (require 'rust-mode)
+#+end_src
 
 #+begin_src emacs-lisp
   (setq nix-ts-mode-indent-offset 4
-        rust-ts-mode-indent-offset 4)
+        rust-ts-mode-indent-offset 4
+        lua-ts-mode-indent-offset 4
+        just-ts-mode-indent-offset 4)
 
-  (add-to-list 'auto-mode-alist '("\\.nix\\'" . nix-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
-  (add-to-list 'auto-mode-alist '("\\.lua\\'" . lua-ts-mode))
+  (setq major-mode-remap-alist
+        '((nix-mode . nix-ts-mode)
+          (rust-mode . rust-ts-mode)
+          (lua-mode . lua-ts-mode)
+          (just-mode . just-ts-mode)
+          (markdown-mode . markdown-ts-mode)))
+#+end_src
+
+* Language Servers
+#+begin_src emacs-lisp
+  (require 'eglot)
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  (add-hook 'eglot--managed-mode-hook (lambda () (flymake-mode -1)))
+
+  (add-hook 'rust-ts-mode-hook 'eglot-ensure)
+#+end_src
+
+
+* Expand
+#+begin_src emacs-lisp
+  (defvar nj/expand-state nil)
+
+  (defun nj/expand ()
+    (interactive)
+    (call-interactively nj/expand-state))
+
+  (evil-define-key 'visual global-map (kbd "K") 'nj/expand)
+
+  (defun nj/expand-advice-add (funcs)
+    (dolist (f funcs)
+      (evil--advice-add f :after
+                        `(lambda (&rest _args)
+                           (setq nj/expand-state ',f)))))
+
+  (nj/expand-advice-add '(evil-a-paren
+                          evil-inner-paren
+
+                          evil-a-bracket
+                          evil-inner-bracket
+
+                          evil-a-curly
+                          evil-inner-curly
+
+                          evil-a-back-quote
+                          evil-inner-back-quote
+
+                          evil-a-single-quote
+                          evil-inner-quote
+
+                          evil-a-double-quote
+                          evil-inner-double-quote
+
+                          evil-a-paragraph
+                          evil-inner-paragraph
+
+                          evil-a-tag
+                          evil-inner-tag))
+#+end_src
+
+* XTERM
+#+begin_src emacs-lisp
+  (require 'xterm-color)
+  (setq compilation-environment '("TERM=xterm-256color"))
+
+  (define-advice compilation-filter (:around (f proc string) xterm-color)
+    (funcall f proc (xterm-color-filter string)))
 #+end_src

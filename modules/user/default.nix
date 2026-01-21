@@ -20,4 +20,24 @@
         name = "Adwaita";
         size = 24;
     };
+
+    home.packages = with pkgs; [
+        # Languages
+        lua
+        go
+        rustc
+        cargo
+        rust-analyzer
+
+        dysk
+        ripgrep
+        eza
+        valgrind
+        fd
+        bat
+        fzf
+        tealdeer
+        imagemagick
+        pandoc
+    ];
 }
