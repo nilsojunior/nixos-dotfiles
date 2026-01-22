@@ -33,6 +33,9 @@ in
 
                     search = {
                         force = true;
+                        # NOTE: duckduckgo has most of this stuff already bultuin so should probably remove them
+                        # but it's kinda good to have it in case I change the search engine in the future.
+                        default = "ddg";
                         engines = {
                             rust = {
                                 name = "Rust";

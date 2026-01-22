@@ -29,11 +29,11 @@ in
                         undo-fu-session
 
                         diredfl
+                        xterm-color
+
                         consult
                         corfu
                         cape
-
-                        xterm-color
 
                         rust-mode
                         nix-mode
@@ -50,6 +50,7 @@ in
                                 tree-sitter-just
                                 tree-sitter-lua
                                 tree-sitter-markdown
+                                tree-sitter-elisp
                             ]
                         ))
                     ];

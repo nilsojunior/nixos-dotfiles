@@ -31,7 +31,7 @@
         };
         zsh.enable = true;
         browser = "firefox";
-        editor = "nvim";
+        editor = "emacs";
         terminal = "kitty";
         keepass.enable = true;
         git.enable = true;

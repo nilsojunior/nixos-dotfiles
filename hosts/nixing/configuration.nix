@@ -91,17 +91,10 @@
 
     environment.systemPackages = with pkgs; [
         wget
-        kitty
-        ghostty
         neovim
         pavucontrol
         gcc
-        lua-language-server
-        stylua
-        nixfmt
         just
-        nil
-        nixd
     ];
 
     nix.settings.experimental-features = [
@@ -112,7 +105,7 @@
     # List services that you want to enable:
 
     # Open ports in the firewall.
-    # networking.firewall.allowedTCPPorts = [ ... ];
+    # networking.firewall.allowdTCPPorts = [ ... ];
     # networking.firewall.allowedUDPPorts = [ ... ];
     # Or disable the firewall altogether.
     # networking.firewall.enable = false;
