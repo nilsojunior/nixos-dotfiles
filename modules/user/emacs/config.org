@@ -166,42 +166,60 @@ Disable line wrapping
 
 ** Face Attributes
 #+begin_src emacs-lisp
-  ;; (set-face-attribute 'mode-line nil
-  ;; 					:inherit 'default
-  ;; :background 'unspecified
-  ;; :foreground 'unspecified)
-
-  (set-face-attribute 'mode-line-inactive nil
-  					:inherit 'mode-line
-  					:background 'unspecified)
+  (defvar nj/accent 'minibuffer-prompt)
 
   (set-face-attribute 'mode-line nil
-  					:inherit 'mode-line
-  					:background "#131520")
+                      :inherit 'mode-line
+                      :foreground 'unspecified)
+  ;; :background "#131520")
+
+  (set-face-attribute 'mode-line-inactive nil
+                      :inherit 'mode-line
+                      :background 'unspecified)
 
   (set-face-attribute 'line-number-current-line nil
-  					:inherit 'font-lock-constant-face
-  					:background 'unspecified)
+                      :inherit nj/accent
+                      :background 'unspecified)
 
-  (set-cursor-color (face-foreground 'font-lock-constant-face))
+  (set-face-attribute 'show-paren-match nil
+                      :background "#d5c4a1")
+
+  (set-cursor-color (face-foreground nj/accent))
+
+  (set-face-attribute 'font-lock-variable-name-face nil
+                      :foreground nil)
+
+  (set-face-attribute 'font-lock-function-name-face nil
+                      :foreground (face-attribute 'font-lock-warning-face :foreground))
 
   (defun nj/inherit-background (faces)
     (dolist (face faces)
       (set-face-attribute face nil
-  						:inherit 'default
-  						:background 'unspecified)))
+                          :inherit 'default
+                          :background 'unspecified)))
 
   (nj/inherit-background
    '(fringe
-     tooltip
+     ;; tooltip
      line-number))
   ;; line-number-current-line
   ;; mode-line-inactive
 #+end_src
 
-Theme cursor based on colorschme
+Add the accent colour for symbols
 #+begin_src emacs-lisp
-  ;; (set-cursor-color (face-foreground 'default))
+  (defun nj/colours ()
+    (unless (derived-mode-p 'help-mode 'special-mode)
+      (font-lock-add-keywords nil
+                              '(("->" . nj/accent)
+                                ("<-" . nj/accent)
+                                ("=>" . nj/accent)
+                                ("[]{}()!@#$%^&*+=|\\~`?/;:,.<>'\"\[]" . nj/accent))
+                              'append)
+      (when (derived-mode-p 'org-mode)
+        (font-lock-flush))))
+
+  (add-hook 'after-change-major-mode-hook 'nj/colours)
 #+end_src
 
 Make the default font bold
@@ -289,10 +307,6 @@ Maybe I want buffer navigation keybinds?
   ;; org-hide-emphasis-markers t
   (with-eval-after-load 'org (global-org-modern-mode))
   (require 'org-tempo)
-
-  (setq org-src-lang-modes
-        (append org-src-lang-modes
-                '(("elisp" . emacs-lisp-ts))))
 #+end_src
 
 Make ellipsis use the same color as the header
@@ -389,7 +403,7 @@ Using xterm instead
   (setq corfu-auto-delay 0.15
         corfu-echo-delay 0.15
         corfu-popupinfo-direction '(right)
-        corfu-border-width 2
+        corfu-border-width 0
         ;; corfu-auto t
         text-mode-ispell-word-completion nil) ;; Not sure
 
@@ -432,23 +446,35 @@ Just TAB will trigger completion instead of M-TAB
 * Treesitter
 For some reason I have to require this so things that use `rust-mode` work.
 Otherwise I can't jump between erros in the compilation buffer.
+Maybe I should just use `rust-mode` with `rust-mode-treesitter-derive`?
 #+begin_src emacs-lisp
   (require 'rust-mode)
 #+end_src
 
+** Modes
 #+begin_src emacs-lisp
-  (setq nix-ts-mode-indent-offset 4
-        rust-ts-mode-indent-offset 4
-        lua-ts-mode-indent-offset 4
-        just-ts-mode-indent-offset 4)
+  ;; (setq treesit-font-lock-level 3
+  ;;       nix-ts-mode-indent-offset 4
+  ;;       rust-ts-mode-indent-offset 4
+  ;;       lua-ts-mode-indent-offset 4
+  ;;       just-ts-mode-indent-offset 4)
 
-  (setq major-mode-remap-alist
-        '((nix-mode . nix-ts-mode)
-          (rust-mode . rust-ts-mode)
-          (lua-mode . lua-ts-mode)
-          (just-mode . just-ts-mode)
-          (markdown-mode . markdown-ts-mode)))
-#+end_src
+  ;; (setq major-mode-remap-alist
+  ;;       '((nix-mode . nix-ts-mode)
+  ;; (rust-mode . rust-ts-mode)
+  ;; (lua-mode . lua-ts-mode)
+  ;; (just-mode . just-ts-mode)
+  ;; (markdown-mode . markdown-ts-mode)))
+
+  (defun nj/set-indentation (modes)
+    (dolist (mode modes)
+      (add-hook mode (lambda () (setq tab-width 4)))))
+
+  (nj/set-indentation '(nix-mode-hook
+                        rust-mode-hook
+                        lua-mode-hook
+                        just-mode-hook))
+                         #+end_src
 
 * Language Servers
 #+begin_src emacs-lisp

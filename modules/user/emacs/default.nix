@@ -50,7 +50,6 @@ in
                                 tree-sitter-just
                                 tree-sitter-lua
                                 tree-sitter-markdown
-                                tree-sitter-elisp
                             ]
                         ))
                     ];
