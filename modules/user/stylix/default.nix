@@ -51,9 +51,11 @@ in
                 hyprland.enable = false;
                 kitty.fonts.enable = false;
                 firefox = {
-                    profileNames = [ "nilso" ];
-                    colorTheme.enable = true;
-                    colors.enable = true;
+                    enable = false;
+                    # enable = true;
+                    # profileNames = [ "nilso" ];
+                    # colorTheme.enable = true;
+                    # colors.enable = true;
                 };
             };
 

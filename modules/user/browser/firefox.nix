@@ -8,6 +8,7 @@
 let
     cfg = config.userSettings.firefox;
     keepass = config.userSettings.keepass.enable;
+    stylix = config.userSettings.stylix.enable;
 in
 {
     options = {
@@ -97,84 +98,215 @@ in
                 };
 
                 userChrome = /* CSS */ ''
-                        * {
-                        /* font-family: "Inter" !important; */
-                        font-weight: 600;
-                        font-size: 12px;
-                        }
+* {
+/* font-family: "Inter" !important; */
+/* font-weight: 600; */
+font-weight: bold;
+font-size: 12px;
+}
 
-                        #save-to-pocket-button {
-                        display: none;
-                        }
+#save-to-pocket-button,
+#fxa-toolbar-menu-button,
+#sidebar-button,
+#reload-button,
+#forward-button,
+#back-button,
+#star-button-box,
+#alltabs-button,
+#tabs-newtab-button,
+#urlbar-search-mode-indicator-close,
+.titlebar-button.titlebar-close,
+.tab-close-button.close-icon {
+    display: none;
+}
 
-                        .tab-close-button.close-icon {
-                        display: none;
-                        }
+#unified-extensions-button:hover,
+#PanelUI-menu-button:hover,
+#stop-button:hover {
+    opacity: 1;
+}
 
-                        #fxa-toolbar-menu-button {
-                        display: none;
-                        }
+#unified-extensions-button,
+#PanelUI-menu-button,
+#stop-button {
+    opacity: 0;
+}
 
-                        #sidebar-button {
-                        display: none;
-                        }
+.tabbrowser-tab:not([selected="true"]):not(:hover) .tab-content {
+opacity: 0.7;
+                     }
 
-                        #reload-button {
-                        display: none;
-                        }
+:root {
+	--uc-navbar-transform: calc(0px - var(--tab-min-height) - 2px);
+}
 
-                        #forward-button {
-                        display: none;
-                        }
+#navigator-toolbox > div {
+	display: contents;
+}
 
-                        #back-button {
-                        display: none;
-                        }
+:root[sessionrestored] :where(
+	#nav-bar,
+	#PersonalToolbar,
+	#tab-notification-deck,
+	.global-notificationbox
+) {
+	transform: translateY(var(--uc-navbar-transform));
+}
 
-                        .titlebar-button.titlebar-close {
-                        display: none;
-                        }
+:root:is([customizing], [chromehidden*="toolbar"]) :where(
+	#nav-bar,
+	#PersonalToolbar,
+	#tab-notification-deck,
+	.global-notificationbox
+                                      ) {
+	transform: none !important;
+	opacity: 1 !important;
+                                      }
 
-                        #star-button-box {
-                        display: none;
-                        }
+#nav-bar:not([customizing]) {
+	opacity: 0;
+	position: relative;
+	z-index: 2;
+}
 
-                        #alltabs-button {
-                        display: none;
-                        }
+#titlebar {
+	position: relative;
+	z-index: 3;
+}
 
-                        #unified-extensions-button:hover {
-                        opacity: 1;
-                        }
+#navigator-toolbox,
+#sidebar-box,
+#sidebar-main,
+#sidebar-splitter,
+#tabbrowser-tabbox {
+	z-index: auto !important;
+}
 
-                        #unified-extensions-button {
-                        opacity: 0;
-                        }
+/* Show when toolbox is focused, like when urlbar has received focus */
+#navigator-toolbox:focus-within > .browser-toolbar {
+	transform: translateY(0);
+	opacity: 1;
+}
 
-                        #PanelUI-menu-button:hover {
-                        opacity: 1;
-                        }
+/* Show when toolbox is hovered */
+#titlebar:hover ~ .browser-toolbar,
+.browser-titlebar:hover ~ :is(#nav-bar, #PersonalToolbar),
+#nav-bar:hover,
+#nav-bar:hover + #PersonalToolbar {
+	transform: translateY(0);
+	opacity: 1;
+}
 
-                        #PanelUI-menu-button {
-                        opacity: 0;
-                        }
+:root[sessionrestored] #urlbar[popover] {
+	opacity: 0;
+	pointer-events: none;
+	transform: translateY(var(--uc-navbar-transform));
+}
 
-                        #stop-button {
-                        opacity: 0;
-                        }
+#mainPopupSet:has(> [panelopen]:not(
+	#ask-chat-shortcuts,
+	#selection-shortcut-action-panel,
+	#chat-shortcuts-options-panel,
+	#tab-preview-panel
+)) ~ toolbox #urlbar[popover],
+.browser-titlebar:is(:hover, :focus-within) ~ #nav-bar #urlbar[popover],
+#nav-bar:is(:hover, :focus-within) #urlbar[popover],
+#urlbar-container > #urlbar[popover]:is([focused], [open]) {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translateY(0);
+}
 
-                        #stop-button:hover {
-                        opacity: 1;
-                        }
+/* This ruleset is separate, because not having :has support breaks other selectors as well */
+#mainPopupSet:has(> [panelopen]:not(
+	#ask-chat-shortcuts,
+	#selection-shortcut-action-panel,
+	#chat-shortcuts-options-panel,
+	#tab-preview-panel
+)) ~ #navigator-toolbox > .browser-toolbar {
+	transform: translateY(0);
+	opacity: 1;
+}
 
-                        #tabs-newtab-button {
-                        display: none;
-                        }
+/* Move up the content view */
+:root[sessionrestored]:not([chromehidden~="toolbar"]) > body > #browser {
+	margin-top: var(--uc-navbar-transform);
+}
 
-                        .tabbrowser-tab:not([selected="true"]):not(:hover) .tab-content {
-                        opacity: 0.7;
-                                             }
-                    '';
+:root[inFullscreen] > body > #browser {
+	margin-top: 0 !important;
+}
+
+${lib.optionalString stylix ''
+:root {
+    --arrowpanel-background: #${config.lib.stylix.colors.base01} !important;
+}
+
+menupopup{
+    --panel-background: #${config.lib.stylix.colors.base01} !important;
+}
+
+#navigator-toolbox {
+    background: #${config.lib.stylix.colors.base00} !important;
+    color: #${config.lib.stylix.colors.base05} !important;
+}
+
+/* Tab Active */
+.tab-background:is([selected], [multiselected]) {
+	background: #${config.lib.stylix.colors.base00} !important;
+}
+.tabbrowser-tab:is([selected], [multiselected]) .tab-label {
+    color: #${config.lib.stylix.colors.base05} !important;
+}
+
+/* Tab: hovered colors */
+#tabbrowser-tabs .tabbrowser-tab:hover:not([selected]) .tab-content {
+	background: #${config.lib.stylix.colors.base00} !important;
+	color: #${config.lib.stylix.colors.base05} !important;
+}
+
+
+#nav-bar {
+    background: #${config.lib.stylix.colors.base00} !important;
+    color: #${config.lib.stylix.colors.base05} !important;
+}
+
+.urlbar-background {
+    background: #${config.lib.stylix.colors.base01} !important;
+}
+
+::selection {
+    background: #${config.lib.stylix.colors.base0D} !important;
+}
+
+/* https://www.reddit.com/r/FirefoxCSS/comments/pq0eyi/how_to_remove_the_blue_border_around_urlbar/ */
+:root{ --toolbar-field-focus-border-color: transparent !important; }
+
+/* safari style tab width */
+.tabbrowser-tab[fadein] {
+	max-width: 100vw !important;
+	border: none
+}
+
+.tabbrowser-tab {
+	/* remove border between tabs */
+	padding-inline: 0px !important;
+	/* reduce fade effect of tab text */
+	--tab-label-mask-size: 1em !important;
+	/* fix pinned tab behaviour on overflow */
+	overflow-clip-margin: 0px !important;
+}
+
+/* disable tab shadow */
+#tabbrowser-tabs:not([noshadowfortests]) .tab-background:is([selected], [multiselected]) {
+    box-shadow: none !important;
+}
+
+/* remove titlebar spacers */
+/* top right thingy */
+.titlebar-spacer { display: none !important; }
+ ''}
+                '';
             };
         };
     };
