@@ -137,20 +137,11 @@ opacity: 0.7;
                      }
 
 :root {
-	--uc-navbar-transform: calc(0px - var(--tab-min-height) - 2px);
+	--uc-navbar-transform: calc(0px - var(--tab-min-height) - 3px);
 }
 
 #navigator-toolbox > div {
 	display: contents;
-}
-
-:root[sessionrestored] :where(
-	#nav-bar,
-	#PersonalToolbar,
-	#tab-notification-deck,
-	.global-notificationbox
-) {
-	transform: translateY(var(--uc-navbar-transform));
 }
 
 :root:is([customizing], [chromehidden*="toolbar"]) :where(
@@ -188,15 +179,6 @@ opacity: 0.7;
 	opacity: 1;
 }
 
-/* Show when toolbox is hovered */
-#titlebar:hover ~ .browser-toolbar,
-.browser-titlebar:hover ~ :is(#nav-bar, #PersonalToolbar),
-#nav-bar:hover,
-#nav-bar:hover + #PersonalToolbar {
-	transform: translateY(0);
-	opacity: 1;
-}
-
 :root[sessionrestored] #urlbar[popover] {
 	opacity: 0;
 	pointer-events: none;
@@ -209,8 +191,6 @@ opacity: 0.7;
 	#chat-shortcuts-options-panel,
 	#tab-preview-panel
 )) ~ toolbox #urlbar[popover],
-.browser-titlebar:is(:hover, :focus-within) ~ #nav-bar #urlbar[popover],
-#nav-bar:is(:hover, :focus-within) #urlbar[popover],
 #urlbar-container > #urlbar[popover]:is([focused], [open]) {
 	opacity: 1;
 	pointer-events: auto;

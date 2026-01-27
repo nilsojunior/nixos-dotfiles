@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 {
     imports = [
         ../../modules/user
@@ -40,6 +40,7 @@
             enable = true;
             theme = "gruvboxing";
         };
+        spotify.enable = true;
     };
 
     programs.ssh.enableDefaultConfig = false;

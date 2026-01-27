@@ -11,6 +11,7 @@
         ./git
         ./emacs
         ./stylix
+        ./spotify
     ];
     home.file.".config/nvim".source = ./nvim;
 
