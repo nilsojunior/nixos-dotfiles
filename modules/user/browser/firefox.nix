@@ -158,6 +158,7 @@ opacity: 0.7;
 	opacity: 0;
 	position: relative;
 	z-index: 2;
+	pointer-events: none;
 }
 
 #titlebar {
@@ -177,6 +178,7 @@ opacity: 0.7;
 #navigator-toolbox:focus-within > .browser-toolbar {
 	transform: translateY(0);
 	opacity: 1;
+    pointer-events: auto;
 }
 
 :root[sessionrestored] #urlbar[popover] {
