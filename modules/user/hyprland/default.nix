@@ -8,6 +8,7 @@ let
     cfg = config.userSettings.hyprland;
     browser = config.userSettings.browser;
     terminal = config.userSettings.terminal;
+    spotify = config.userSettings.spotify;
     themes = import ./themes.nix;
     shader_path = ".config/hypr/shaders/vibrance.glsl";
     disable_shader = "hyprctl keyword decoration:screen_shader '';";
@@ -32,40 +33,49 @@ in
         home.packages = with pkgs; [
             kitty
             hyprpicker
+            hyprshot
         ];
 
         wayland.windowManager.hyprland.settings = lib.mkMerge [
             {
                 "$mainMod" = "SUPER";
                 "$rotate_val" = 100;
+
                 cursor = {
                     hide_on_key_press = true;
                 };
+
                 exec-once = [
                     "[workspace 1 silent] ${browser}"
                     "[workspace 3 silent] ${terminal}"
-                ];
+                ] ++ lib.optional spotify.enable "[workspace 4 silent] spotify";
+
                 input = {
                     force_no_accel = true;
                     follow_mouse = 1;
                     sensitivity = 0; # -1.0 - 1.0, 0 means no modification.
                 };
+
                 windowrulev2 = [
                     "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
                     "suppressevent maximize, class:.*"
                 ];
+
                 dwindle = {
                     pseudotile = true;
                     preserve_split = true;
                 };
+
                 master = {
                     new_status = "master";
                 };
+
                 misc = {
                     key_press_enables_dpms = true;
                     force_default_wallpaper = -1; # Set to 0 or 1 to disable the anime mascot wallpapers
                     disable_hyprland_logo = true; # If true disables the random hyprland logo / anime girl background. :(
                 };
+
                 bind = [
                     "$mainMod, T, exec, ${terminal}"
                     "$mainMod, B, exec, ${browser}"
@@ -79,7 +89,13 @@ in
                     "$mainMod, K, movefocus, u"
                     "$mainMod, L, movefocus, r"
 
+                    # Hyprpicker
                     "$SUPER_SHIFT, X, exec, ${disable_shader} hyprpicker --autocopy --lowercase-hex; ${enable_shader}"
+
+                    # Screenshots
+                    "$mainMod, P, exec, hyprshot -m window"
+                    "$SUPER_SHIFT, P, exec, hyprshot -m region"
+                    "$SUPER_CTRL, P, exec, hyprshot -m output -m active"
 
                     "$SUPER_SHIFT, H, resizeactive, -$rotate_val 0"
                     "$SUPER_SHIFT, J, resizeactive, 0 $rotate_val"
@@ -106,6 +122,7 @@ in
                     "$mainMod SHIFT, 9, movetoworkspace, 9"
                     "$mainMod SHIFT, 0, movetoworkspace, 10"
                 ];
+
                 bindm = [
                     "$mainMod, mouse:272, movewindow"
                     "$mainMod, mouse:273, resizewindow"
@@ -115,6 +132,7 @@ in
                     screen_shader = "~/${shader_path}";
                 };
             }
+
             # Add Nvidia config if necessary
             (lib.mkIf cfg.nvidia {
                 env = [
@@ -125,9 +143,11 @@ in
                     "ELECTRON_OZONE_PLATFORM_HINT,auto"
                     "NIXOS_OZONE_WL=1"
                 ];
+
                 cursor = {
                     no_hardware_cursors = true;
                 };
+
                 misc = {
                     vrr = 1;
                 };
@@ -137,6 +157,10 @@ in
             cfg.config
             themes.borders
         ];
+
+        home.sessionVariables = {
+            HYPRSHOT_DIR = "Pictures/screenshots";
+        };
 
         home.file."${shader_path}".text = ''
 /*
