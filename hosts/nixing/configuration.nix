@@ -103,7 +103,10 @@
         pavucontrol
         gcc
         just
+        vial
     ];
+
+    services.udev.packages = [ pkgs.vial ];
 
     nix.settings.experimental-features = [
         "nix-command"
