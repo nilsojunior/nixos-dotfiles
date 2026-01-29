@@ -21,11 +21,11 @@
                     "3, monitor:$main"
                     "4, monitor:$main"
                     "5, monitor:$main"
-                    "6, monitor:$second"
-                    "7, monitor:$second"
+                    "6, monitor:$main"
+                    "7, monitor:$main"
                     "8, monitor:$second"
-                    "9, monitor:$main"
-                    "10, monitor:$main"
+                    "9, monitor:$second"
+                    "10, monitor:$second"
                 ];
             };
         };
