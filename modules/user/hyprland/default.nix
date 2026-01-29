@@ -84,7 +84,8 @@ in
                     "$SUPER_SHIFT, Q, forcekillactive"
                     "$SUPER_SHIFT, BACKSPACE, exit"
                     "$mainMod, V, togglefloating"
-                    "$mainMod, F, fullscreen"
+                    "$mainMod, F, fullscreen, 1" # Maximize
+                    "$SUPER_SHIFT, F, fullscreen"
                     "$mainMod, H, movefocus, l"
                     "$mainMod, J, movefocus, d"
                     "$mainMod, K, movefocus, u"
