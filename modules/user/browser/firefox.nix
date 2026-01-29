@@ -116,6 +116,7 @@ font-size: 12px;
 #tabs-newtab-button,
 #urlbar-search-mode-indicator-close,
 .titlebar-button.titlebar-close,
+.close-icon.findbar-closebutton,
 .tab-close-button.close-icon {
     display: none;
 }
@@ -133,7 +134,7 @@ font-size: 12px;
 }
 
 .tabbrowser-tab:not([selected="true"]):not(:hover) .tab-content {
-opacity: 0.7;
+    opacity: 0.5;
                      }
 
 :root {
@@ -247,7 +248,7 @@ menupopup{
 	color: #${config.lib.stylix.colors.base05} !important;
 }
 
-
+/* Top Bar */
 #nav-bar {
     background: #${config.lib.stylix.colors.base00} !important;
     color: #${config.lib.stylix.colors.base05} !important;
@@ -255,6 +256,26 @@ menupopup{
 
 .urlbar-background {
     background: #${config.lib.stylix.colors.base01} !important;
+}
+
+/* Find Bar */
+.browserContainer > findbar {
+    background: #${config.lib.stylix.colors.base00} !important;
+    color: #${config.lib.stylix.colors.base05} !important;
+}
+.findbar-textbox {
+    background: #${config.lib.stylix.colors.base01} !important;
+    color: #${config.lib.stylix.colors.base05} !important;
+    border: none !important;
+}
+.findbar-textbox::placeholder {
+    color: transparent !important;
+}
+
+/* Bottom left tooltip */
+#statuspanel-label {
+  background: #${config.lib.stylix.colors.base00} !important;
+  color: #${config.lib.stylix.colors.base05} !important;
 }
 
 ::selection {
