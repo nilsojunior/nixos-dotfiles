@@ -34,6 +34,7 @@ in
             kitty
             hyprpicker
             hyprshot
+            hyprlock
         ];
 
         wayland.windowManager.hyprland.settings = lib.mkMerge [
@@ -161,6 +162,29 @@ in
         home.sessionVariables = {
             HYPRSHOT_DIR = "Pictures/screenshots";
         };
+
+        home.file.".config/hypr/hyprlock.conf".text = ''
+general {
+    hide_cursor = true
+}
+
+background {
+    path = screenshot
+    blur_passes = 3
+}
+
+input-field {
+    size = 20%, 5%
+    outline_thickness = 1
+    rounding = 15
+    inner_color = 0xff${config.lib.stylix.colors.base00}
+    outer_color = 0xff454545
+    font_color = 0xff${config.lib.stylix.colors.base05}
+    placeholder_text =
+    fade_timeout = 0
+}
+
+        '';
 
         home.file."${shader_path}".text = ''
 /*
