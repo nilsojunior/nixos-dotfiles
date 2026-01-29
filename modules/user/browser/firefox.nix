@@ -282,16 +282,16 @@ menupopup{
     background: #${config.lib.stylix.colors.base0D} !important;
 }
 
-/* Remove shadow when tab text overflows */
-.tabbrowser-tab .tab-label-container {
-  mask-image: none !important;
+.tabbrowser-tab .tab-label {
+    /* overflow: hidden !important; */
+    /* text-overflow: "" !important; */
+    /* white-space: nowrap !important; */
+    max-width: 250px !important;
 }
 
-.tabbrowser-tab .tab-label {
-  overflow: hidden !important;
-  text-overflow: "" !important;
-  white-space: nowrap !important;
-  max-width: 200px;
+/* Remove shadow when tab text overflows */
+.tabbrowser-tab .tab-label-container {
+    /* mask-image: none !important; */
 }
 
 /* https://www.reddit.com/r/FirefoxCSS/comments/pq0eyi/how_to_remove_the_blue_border_around_urlbar/ */
