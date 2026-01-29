@@ -282,8 +282,39 @@ menupopup{
     background: #${config.lib.stylix.colors.base0D} !important;
 }
 
+/* Remove shadow when tab text overflows */
+.tabbrowser-tab .tab-label-container {
+  mask-image: none !important;
+}
+
+.tabbrowser-tab .tab-label {
+  overflow: hidden !important;
+  text-overflow: "" !important;
+  white-space: nowrap !important;
+  max-width: 200px;
+}
+
 /* https://www.reddit.com/r/FirefoxCSS/comments/pq0eyi/how_to_remove_the_blue_border_around_urlbar/ */
 :root{ --toolbar-field-focus-border-color: transparent !important; }
+
+/* Remove the tooltip that shows when hovering over a tab for a while */
+/* https://superuser.com/a/1925171 */
+#tab-preview-panel { display:none !important }
+
+/* Source file https://github.com/MrOtherGuy/firefox-csshacks/tree/master/chrome/centered_tab_content.css made available under Mozilla Public License v. 2.0
+See the above repository for updates as well as full license text. */
+.tabbrowser-tab[selected]:not(:hover):not([pinned]) .tab-label-container,
+#tabbrowser-tabs:not([closebuttons="activetab"]) .tabbrowser-tab:not(:hover):not([pinned]) .tab-label-container{
+  /* padding-inline-end: 6px !important; */
+}
+.tab-icon-stack{
+  margin-inline-start: auto
+}
+.tab-label-container{
+  max-width: min-content;
+  margin-inline-end: auto;
+}
+
 
 /* safari style tab width */
 .tabbrowser-tab[fadein] {
