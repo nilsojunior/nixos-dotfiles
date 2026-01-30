@@ -341,6 +341,34 @@ See the above repository for updates as well as full license text. */
 .titlebar-spacer { display: none !important; }
  ''}
                 '';
+
+                userContent = /* CSS */''
+${lib.optionalString stylix ''
+:root {
+    --tridactyl-bg: #${config.lib.stylix.colors.base00} !important;
+    --tridactyl-fg: #${config.lib.stylix.colors.base05} !important;
+    --tridactyl-of-fg: #${config.lib.stylix.colors.base05} !important;
+    --tridactyl-of-bg: #${config.lib.stylix.colors.base02} !important;
+    --tridactyl-url-fg: #${config.lib.stylix.colors.base03} !important;
+    --tridactyl-photon-colours-accent-1: #${config.lib.stylix.colors.base03} !important;
+}
+
+#completions .sectionHeader {
+    background: #${config.lib.stylix.colors.base00} !important;
+    color: #${config.lib.stylix.colors.base0D} !important;
+}
+
+#command-line-holder {
+    background: #${config.lib.stylix.colors.base01} !important;
+    color: #${config.lib.stylix.colors.base0D} !important;
+}
+
+#tridactyl-input {
+    background: #${config.lib.stylix.colors.base01} !important;
+    color: #${config.lib.stylix.colors.base05} !important;
+}
+''}
+                '';
             };
         };
     };
