@@ -9,7 +9,8 @@
   (scroll-bar-mode -1)
 
   (setq initial-buffer-choice nil
-        inhibit-x-resources t)
+        inhibit-x-resources t
+        frame-inhibit-implied-resize t)
 #+end_src
 
 Disable startup message
@@ -181,9 +182,6 @@ Disable line wrapping
                       :inherit nj/accent
                       :background 'unspecified)
 
-  (set-face-attribute 'show-paren-match nil
-                      :background "#d5c4a1")
-
   (set-cursor-color (face-foreground nj/accent))
 
   (set-face-attribute 'font-lock-variable-name-face nil
@@ -191,6 +189,9 @@ Disable line wrapping
 
   (set-face-attribute 'font-lock-function-name-face nil
                       :foreground (face-attribute 'font-lock-warning-face :foreground))
+
+  (set-face-attribute 'show-paren-match nil
+                      :background (face-foreground 'error nil 'default))
 
   (defun nj/inherit-background (faces)
     (dolist (face faces)
@@ -267,6 +268,16 @@ Maybe I want buffer navigation keybinds?
            (default-directory project))
       (project-find-file)))
 
+  (defun nj/open-remote ()
+    "Open remote repository in the browser."
+    (interactive)
+    (if (vc-root-dir)
+        (let ((url (string-trim (shell-command-to-string "git remote get-url origin"))))
+          (if (string-match-p "github\\.com" url)
+              (browse-url (string-replace "git@github.com:" "https://github.com/" url))
+            (message "ERROR: The repository: %s is not hosted on GitHub." url)))
+      (message "ERROR: Not a git repository.")))
+
   (nj/leader-keys
     "y" '((lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank)) :wk "Yank to system clipboard")
     "Y" '((lambda () (interactive) (evil-use-register ?+) (call-interactively 'evil-yank-line)) :wk "Yank to system clipboard")
@@ -285,7 +296,8 @@ Maybe I want buffer navigation keybinds?
     "sd" '(shell-command :wk "Shell Command")
     "sf" '(async-shell-command :wk "Async Shell Command")
     "cj" '(recompile :wk "Recompile")
-    "ck" '(compile :wk "Compile"))
+    "ck" '(compile :wk "Compile")
+    "gh" '(nj/open-remote :wk "Open remote repo in browser"))
 
   (defun nj/paste-from-system ()
     (interactive)
@@ -338,8 +350,7 @@ Make ellipsis use the same color as the header
 
   (add-hook 'before-save-hook 'nj/format-buffer)
 
-  ;; (require 'centered-cursor-mode)
-  ;; (global-centered-cursor-mode)
+  (global-auto-revert-mode)
 #+end_src
 
 Last compile command will be the default
@@ -474,7 +485,7 @@ Maybe I should just use `rust-mode` with `rust-mode-treesitter-derive`?
                         rust-mode-hook
                         lua-mode-hook
                         just-mode-hook))
-                         #+end_src
+#+end_src
 
 * Language Servers
 #+begin_src emacs-lisp
@@ -514,11 +525,11 @@ Maybe I should just use `rust-mode` with `rust-mode-treesitter-derive`?
                           evil-a-back-quote
                           evil-inner-back-quote
 
-                          evil-a-single-quote
-                          evil-inner-quote
+                          ;; evil-a-single-quote
+                          ;; evil-inner-quote
 
-                          evil-a-double-quote
-                          evil-inner-double-quote
+                          ;; evil-a-double-quote
+                          ;; evil-inner-double-quote
 
                           evil-a-paragraph
                           evil-inner-paragraph
@@ -564,4 +575,9 @@ Also set TERM accordingly (xterm-256color) in the shell itself
 
   (define-advice compilation-filter (:around (f proc string) xterm-color)
     (funcall f proc (xterm-color-filter string)))
+#+end_src
+
+* Magit
+#+begin_src emacs-lisp
+  (require 'magit)
 #+end_src
