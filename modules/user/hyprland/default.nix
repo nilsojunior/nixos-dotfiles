@@ -9,7 +9,10 @@ let
     browser = config.userSettings.browser;
     terminal = config.userSettings.terminal;
     spotify = config.userSettings.spotify;
+    keyboard = config.userSettings.hyprland.keyboard;
+
     themes = import ./themes.nix;
+
     shader_path = ".config/hypr/shaders/vibrance.glsl";
     disable_shader = "hyprctl keyword decoration:screen_shader '';";
     enable_shader = "hyprctl keyword decoration:screen_shader '~/${shader_path}'";
@@ -19,6 +22,11 @@ in
         userSettings.hyprland = {
             enable = lib.mkEnableOption "Enables Hyprland";
             nvidia = lib.mkEnableOption "Enables Nvidia for Hyprland";
+            keyboard = lib.mkOption {
+                type = lib.types.str;
+                default = "";
+                description = "Keyboard Name";
+            };
             config = lib.mkOption {
                 type = lib.types.attrs;
                 default = { };
@@ -55,6 +63,9 @@ in
                     force_no_accel = true;
                     follow_mouse = 1;
                     sensitivity = 0; # -1.0 - 1.0, 0 means no modification.
+
+                    kb_layout = "us,us";
+                    kb_variant = ",intl";
                 };
 
                 windowrulev2 = [
@@ -65,6 +76,7 @@ in
                 dwindle = {
                     pseudotile = true;
                     preserve_split = true;
+                    force_split = 2; # Always split to the right
                 };
 
                 master = {
@@ -98,6 +110,9 @@ in
                     "$mainMod, P, exec, hyprshot -m window"
                     "$SUPER_SHIFT, P, exec, hyprshot -m region"
                     "$SUPER_CTRL, P, exec, hyprshot -m output -m active"
+
+                    # Switch keyboard layouts
+                    "$mainMod, Tab, exec, hyprctl switchxkblayout ${keyboard} next"
 
                     "$SUPER_SHIFT, H, resizeactive, -$rotate_val 0"
                     "$SUPER_SHIFT, J, resizeactive, 0 $rotate_val"
@@ -216,7 +231,7 @@ const vec3 Balance = vec3(1.0, 1.0, 1.0);
 * @min -1.0
 * @max 1.0
 */
-const float Strength = 0.90;
+const float Strength = 0.40;
 const vec3 VIB_coeffVibrance = Balance * -Strength;
 void main() {
     vec4 pixColor = texture(tex, v_texcoord);
