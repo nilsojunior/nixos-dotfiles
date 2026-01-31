@@ -44,6 +44,7 @@ in
                     lua-mode
                     markdown-mode
                     markdown-ts-mode
+                    qml-mode
                     (treesit-grammars.with-grammars (
                         grammars: with grammars; [
                             tree-sitter-rust
