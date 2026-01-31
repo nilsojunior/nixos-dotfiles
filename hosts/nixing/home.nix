@@ -8,6 +8,7 @@
         hyprland = {
             enable = true;
             nvidia = true;
+            keyboard = "redox-customized-redox_offical_v1";
             config = {
                 "$main" = "DP-2";
                 "$second" = "HDMI-A-1";

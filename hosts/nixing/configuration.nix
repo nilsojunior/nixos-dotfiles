@@ -21,6 +21,7 @@
         ];
 
     systemSettings = {
+        pipewire.enable = true;
         hyprland.enable = true;
         nvidia.enable = true;
         stylix = {
@@ -76,12 +77,6 @@
     # services.printing.enable = true;
 
     security.rtkit.enable = true;
-    services.pipewire = {
-        enable = true;
-        pulse.enable = true;
-        alsa.enable = true;
-        alsa.support32Bit = true;
-    };
 
     services.getty.autologinUser = "nilso";
 

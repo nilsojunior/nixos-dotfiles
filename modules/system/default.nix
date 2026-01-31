@@ -12,5 +12,6 @@
         ./sshd
         ./gpg
         ./stylix
+        ./pipewire
     ];
 }

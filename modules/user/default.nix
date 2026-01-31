@@ -13,6 +13,7 @@
         ./stylix
         ./spotify
     ];
+
     home.file.".config/nvim".source = ./nvim;
 
     home.pointerCursor = {
