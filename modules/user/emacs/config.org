@@ -191,7 +191,8 @@ Disable line wrapping
                       :foreground (face-attribute 'font-lock-warning-face :foreground))
 
   (set-face-attribute 'show-paren-match nil
-                      :background (face-foreground 'error nil 'default))
+                      :background (face-foreground 'error nil 'default)
+                      :foreground (face-foreground 'default))
 
   (defun nj/inherit-background (faces)
     (dolist (face faces)
@@ -351,6 +352,11 @@ Make ellipsis use the same color as the header
   (add-hook 'before-save-hook 'nj/format-buffer)
 
   (global-auto-revert-mode)
+
+  ;; Source - https://stackoverflow.com/a/8371037
+  ;; Posted by angus
+  ;; Retrieved 2026-01-31, License - CC BY-SA 3.0
+  (set-display-table-slot standard-display-table 0 ?\ )
 #+end_src
 
 Last compile command will be the default
