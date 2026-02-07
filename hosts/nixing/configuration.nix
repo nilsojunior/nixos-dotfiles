@@ -98,8 +98,10 @@
         gcc
         just
         vial
+        sshfs
     ];
 
+    services.tailscale.enable = true;
     services.udev.packages = [ pkgs.vial ];
 
     nix.settings.experimental-features = [
