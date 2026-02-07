@@ -42,20 +42,7 @@
             theme = "gruvboxing";
         };
         spotify.enable = true;
-    };
-
-    programs.ssh.enableDefaultConfig = false;
-    programs.ssh = {
-        enable = true;
-
-        matchBlocks = {
-            "github.com" = {
-                hostname = "github.com";
-                user = "git";
-                addKeysToAgent = "yes";
-                identityFile = "~/.ssh/id_ed25519";
-            };
-        };
+        ssh.enable = true;
     };
 
     home.username = "nilso";
