@@ -51,20 +51,19 @@
     # Don't wait for internet connection to start
     systemd.services.NetworkManager-wait-online.wantedBy = lib.mkForce [ ];
 
-    # Set your time zone.
+    # https://github.com/thiagokokada/nix-configs/blob/a00e8aa50e6e5786e1d533389c100aca41800417/modules/nixos/desktop/locale.nix#L12-L14
+    i18n = {
+        defaultLocale = "en_IE.UTF-8";
+        extraLocaleSettings = {
+            LC_CTYPE = "pt_BR.UTF-8"; # Fix ç in us-intl.
+        };
+    };
+
     time.timeZone = "Brazil/East";
 
     # Configure network proxy if necessary
     # networking.proxy.default = "http://user:password@proxy:port/";
     # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-    # Select internationalisation properties.
-    # i18n.defaultLocale = "en_US.UTF-8";
-    # console = {
-    #   font = "Lat2-Terminus16";
-    #   keyMap = "us";
-    #   useXkbConfig = true; # use xkb.options in tty.
-    # };
 
     # Enable the X11 windowing system.
     # services.xserver.enable = true;
