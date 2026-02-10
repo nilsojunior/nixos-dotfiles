@@ -17,7 +17,7 @@ in
             enable = true;
             profileExtra = /* bash */ ''
                 if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
-                    exec Hyprland
+                    exec start-hyprland
                 fi
             '';
             shellAliases = {

@@ -95,7 +95,7 @@
         wget
         neovim
         pavucontrol
-        gcc
+        gcc15
         just
         vial
         sshfs

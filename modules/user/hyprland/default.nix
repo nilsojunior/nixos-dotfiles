@@ -58,7 +58,7 @@ in
                 exec-once = [
                     "[workspace 1 silent] ${browser}"
                     "[workspace 3 silent] ${terminal}"
-                ] ++ lib.optional spotify.enable "[workspace 4 silent] spotify";
+                ] ++ lib.optional spotify.enable "spotify";
 
                 input = {
                     force_no_accel = true;
@@ -69,10 +69,37 @@ in
                     kb_variant = ",intl";
                 };
 
-                windowrulev2 = [
-                    "nofocus,class:^$,title:^$,xwayland:1,floating:1,fullscreen:0,pinned:0"
-                    "suppressevent maximize, class:.*"
-                ];
+                # From Hyprland docs
+                windowrule = [
+                    {
+                        # Ignore maximize requests from all apps. You'll probably like this.
+                        name = "suppress-maximize-events";
+                        "match:class" = ".*";
+                        suppress_event = "maximize";
+                    }
+                    {
+                        # Fix some dragging issues with XWayland
+                        name = "fix-xwayland-drags";
+                        "match:class" = "^$";
+                        "match:title" = "^$";
+                        "match:xwayland" = true;
+                        "match:float" = true;
+                        "match:fullscreen" = false;
+                        "match:pin" = false;
+                        no_focus = true;
+                    }
+                    {
+                        # Hyprland-run windowrule
+                        name = "move-hyprland-run";
+                        "match:class" = "hyprland-run";
+                        move = "20 monitor_h-120";
+                        float = "yes";
+                    }
+                ] ++ lib.optional spotify.enable {
+                    name = "spotify";
+                    "match:class" = "Spotify";
+                    workspace = "4 silent";
+                };
 
                 dwindle = {
                     pseudotile = true;
