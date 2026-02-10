@@ -10,6 +10,7 @@ let
     terminal = config.userSettings.terminal;
     spotify = config.userSettings.spotify;
     keyboard = config.userSettings.hyprland.keyboard;
+    vicinae = config.userSettings.vicinae;
 
     themes = import ./themes.nix;
 
@@ -138,7 +139,7 @@ in
                     "$mainMod SHIFT, 8, movetoworkspace, 8"
                     "$mainMod SHIFT, 9, movetoworkspace, 9"
                     "$mainMod SHIFT, 0, movetoworkspace, 10"
-                ];
+                ] ++ lib.optional vicinae.enable "$mainMod, SPACE, exec, vicinae toggle";
 
                 bindm = [
                     "$mainMod, mouse:272, movewindow"

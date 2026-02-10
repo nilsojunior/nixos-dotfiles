@@ -13,6 +13,7 @@
         ./stylix
         ./spotify
         ./ssh
+        ./vicinae
     ];
 
     home.file.".config/nvim".source = ./nvim;

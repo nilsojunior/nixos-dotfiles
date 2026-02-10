@@ -43,6 +43,7 @@
         };
         spotify.enable = true;
         ssh.enable = true;
+        vicinae.enable = true;
     };
 
     home.username = "nilso";
