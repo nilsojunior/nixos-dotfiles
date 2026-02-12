@@ -28,6 +28,7 @@ in
                     undo-fu
                     undo-fu-session
                     magit
+                    vterm
 
                     diredfl
                     xterm-color
@@ -36,6 +37,7 @@ in
                     corfu
                     cape
 
+                    # Modes
                     rust-mode
                     nix-mode
                     nix-ts-mode
