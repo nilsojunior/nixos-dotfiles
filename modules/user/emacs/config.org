@@ -118,6 +118,8 @@ These remaps make the cursor stay centered in the screen while navigating
     (kbd "C-S-a") 'nj/insert-blank-line-above
     (kbd "C-k") 'previous-error
     (kbd "C-j") 'next-error)
+
+  (evil-define-key 'insert global-map (kbd "C-c") 'evil-normal-state)
 #+end_src
 
 Stay in visual mode while indenting
@@ -587,3 +589,31 @@ Also set TERM accordingly (xterm-256color) in the shell itself
 #+begin_src emacs-lisp
   (require 'magit)
 #+end_src
+
+* Vterm
+#+begin_src emacs-lisp
+  (require 'vterm)
+  (evil-define-key 'insert vterm-mode-map (kbd "C-c") 'vterm--self-insert)
+  (add-hook 'vterm-mode-hook (lambda () (display-line-numbers-mode 0)))
+
+  (defun nj/toggle-vterm-in-buffer (n)
+    (interactive "P")
+    (if (eq major-mode 'vterm-mode)
+        (evil-buffer nil)
+      (vterm n)))
+
+  (defun nj/toggle-vterm (n)
+    (interactive "P")
+    (if (project-current)
+        (if (eq major-mode 'vterm-mode)
+            (evil-buffer nil)
+        (let ((default-directory (vc-root-dir))
+              (vterm-buffer-name (concat "*vterm " (project-name (project-current)) "*")))
+          (if (get-buffer vterm-buffer-name)
+              (switch-to-buffer vterm-buffer-name)
+            (vterm vterm-buffer-name))))
+      (nj/toggle-vterm-in-buffer n)))
+
+  (nj/leader-keys "te" '(nj/toggle-vterm :wk "Toggle vterm"))
+  (nj/leader-keys "td" '(nj/toggle-vterm-in-buffer :wk "Toggle vterm"))
+              #+end_src
