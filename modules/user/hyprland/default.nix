@@ -11,6 +11,7 @@ let
     spotify = config.userSettings.spotify;
     keyboard = config.userSettings.hyprland.keyboard;
     vicinae = config.userSettings.vicinae;
+    editor = config.userSettings.editor;
 
     themes = import ./themes.nix;
 
@@ -51,14 +52,11 @@ in
                 "$mainMod" = "SUPER";
                 "$rotate_val" = 100;
 
-                cursor = {
-                    hide_on_key_press = true;
-                };
-
                 exec-once = [
                     "[workspace 1 silent] ${browser}"
-                    "[workspace 3 silent] ${terminal}"
-                ] ++ lib.optional spotify.enable "spotify";
+                    "[workspace 3 silent] ${ if editor != "emacs" then terminal else editor }"
+                ]
+                ++ lib.optional spotify.enable "spotify";
 
                 input = {
                     force_no_accel = true;
