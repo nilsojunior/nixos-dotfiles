@@ -1,3 +1,3 @@
 build:
-    git add .
-    sudo nixos-rebuild switch --flake .#nixing
+    git add --intent-to-add .
+    sudo nixos-rebuild switch --flake .#${HOSTNAME}
