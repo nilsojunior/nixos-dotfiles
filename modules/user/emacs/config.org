@@ -347,8 +347,12 @@ Make ellipsis use the same color as the header
   (setq compilation-scroll-output t)
 
   (defun nj/format-buffer ()
-    (indent-region (point-min) (point-max))
-    (message "writingasdf")
+    (let ((root-dir (vc-root-dir)))
+      (if root-dir
+          (let ((files (mapcar (lambda (f) (expand-file-name f root-dir))
+                               '(".clang-format"))))
+            (unless (seq-some #'file-exists-p files)
+              (indent-region (point-min) (point-max))))))
     (delete-trailing-whitespace))
 
   (add-hook 'before-save-hook 'nj/format-buffer)
