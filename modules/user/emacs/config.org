@@ -274,7 +274,7 @@ Maybe I want buffer navigation keybinds?
   (defun nj/open-remote ()
     "Open remote repository in the browser."
     (interactive)
-    (if (vc-root-dir)
+    (if (project-current)
         (let ((url (string-trim (shell-command-to-string "git remote get-url origin"))))
           (if (string-match-p "github\\.com" url)
               (browse-url (string-replace "git@github.com:" "https://github.com/" url))
@@ -347,12 +347,12 @@ Make ellipsis use the same color as the header
   (setq compilation-scroll-output t)
 
   (defun nj/format-buffer ()
-    (let ((root-dir (vc-root-dir)))
-      (if root-dir
-          (let ((files (mapcar (lambda (f) (expand-file-name f root-dir))
-                               '(".clang-format"))))
-            (unless (seq-some #'file-exists-p files)
-              (indent-region (point-min) (point-max))))))
+    (when-let* ((project (project-current))
+                (p-root (project-root project)))
+      (let ((files (mapcar (lambda (f) (expand-file-name f p-root))
+                           '(".clang-format"))))
+        (unless (seq-some 'file-exists-p files)
+          (indent-region (point-min) (point-max)))))
     (delete-trailing-whitespace))
 
   (add-hook 'before-save-hook 'nj/format-buffer)
@@ -608,16 +608,17 @@ Also set TERM accordingly (xterm-256color) in the shell itself
 
   (defun nj/toggle-vterm (n)
     (interactive "P")
-    (if (project-current)
+    (if-let* ((project (project-current))
+              (p-root (project-root project)))
         (if (eq major-mode 'vterm-mode)
             (evil-buffer nil)
-        (let ((default-directory (vc-root-dir))
-              (vterm-buffer-name (concat "*vterm " (project-name (project-current)) "*")))
-          (if (get-buffer vterm-buffer-name)
-              (switch-to-buffer vterm-buffer-name)
-            (vterm vterm-buffer-name))))
+          (let ((default-directory p-root)
+                (vterm-buffer-name (concat "*vterm " (project-name p-root) "*")))
+            (if (get-buffer vterm-buffer-name)
+                (switch-to-buffer vterm-buffer-name)
+              (vterm vterm-buffer-name))))
       (nj/toggle-vterm-in-buffer n)))
 
   (nj/leader-keys "te" '(nj/toggle-vterm :wk "Toggle vterm"))
   (nj/leader-keys "td" '(nj/toggle-vterm-in-buffer :wk "Toggle vterm"))
-              #+end_src
+#+end_src
