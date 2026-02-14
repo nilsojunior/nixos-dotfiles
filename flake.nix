@@ -50,7 +50,6 @@
                           home-manager = {
                               useGlobalPkgs = true;
                               useUserPackages = true;
-                              users.nilso = import ./hosts/nixing/home.nix;
                               backupFileExtension = "backup";
                               extraSpecialArgs = { inherit inputs; inherit pkgs-stable; };
                           };

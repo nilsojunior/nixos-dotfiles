@@ -46,7 +46,5 @@
         vicinae.enable = true;
     };
 
-    home.username = "nilso";
-    home.homeDirectory = "/home/nilso";
     home.stateVersion = "25.11";
 }
