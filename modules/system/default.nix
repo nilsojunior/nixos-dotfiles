@@ -17,7 +17,7 @@
     ];
 
     home-manager.users.${config.systemSettings.user}.imports = [
-        ../../hosts/nixing/home.nix
+        ../../hosts/${config.networking.hostName}/home.nix
     ];
 
     programs.zsh.enable = true;
