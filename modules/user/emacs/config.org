@@ -615,7 +615,7 @@ Also set TERM accordingly (xterm-256color) in the shell itself
         (if (eq major-mode 'vterm-mode)
             (evil-buffer nil)
           (let ((default-directory p-root)
-                (vterm-buffer-name (concat "*vterm " (project-name p-root) "*")))
+                (vterm-buffer-name (concat "*vterm " (project-name project) "*")))
             (if (get-buffer vterm-buffer-name)
                 (switch-to-buffer vterm-buffer-name)
               (vterm vterm-buffer-name))))
