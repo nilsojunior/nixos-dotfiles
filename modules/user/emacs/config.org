@@ -304,7 +304,9 @@ Maybe I want buffer navigation keybinds?
 
   (defun nj/paste-from-system ()
     (interactive)
-    (evil-paste-from-register ?+))
+    (if (eq major-mode 'vterm-mode)
+        (vterm-yank-primary)
+    (evil-paste-from-register ?+)))
 
   (keymap-set global-map "C-S-V" 'nj/paste-from-system)
 #+end_src
