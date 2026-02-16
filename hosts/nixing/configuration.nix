@@ -12,8 +12,6 @@
         ../../modules/system
     ];
 
-    networking.hostName = "nixing";
-
     nixpkgs.config.allowUnfreePredicate =
         pkg:
         builtins.elem (lib.getName pkg) [

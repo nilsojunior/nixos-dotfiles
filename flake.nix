@@ -38,27 +38,48 @@
             system = "x86_64-linux";
             pkgs = import nixpkgs { inherit system; };
             pkgs-stable = import nixpkgs-stable { inherit system; };
+
+            # Taken from here: https://github.com/librephoenix/nixos-config/blob/main/flake.nix
+            # configure lib
+            lib = inputs.nixpkgs.lib;
+
+            # create a list of all directories inside of ./hosts
+            # every directory in ./hosts has config for that machine
+            hosts = builtins.filter (x: x != null) (
+                lib.mapAttrsToList (name: value: if (value == "directory") then name else null) (
+                    builtins.readDir ./hosts
+                )
+            );
         in
           {
-              nixosConfigurations.nixing = nixpkgs.lib.nixosSystem {
-                  system = "x86_64-linux";
-                  modules = [
-                      ./hosts/nixing/configuration.nix
-                      home-manager.nixosModules.home-manager
-                      stylix.nixosModules.stylix
-                      {
-                          home-manager = {
-                              useGlobalPkgs = true;
-                              useUserPackages = true;
-                              backupFileExtension = "backup";
-                              extraSpecialArgs = { inherit inputs; inherit pkgs-stable; };
+              nixosConfigurations = builtins.listToAttrs (
+                  map (host: {
+                      name = host;
+                      value = lib.nixosSystem {
+                          system = "x86_64-linux";
+                          modules = [
+                              { config.networking.hostName = host; }
+                              ./hosts/${host}/configuration.nix
+                              home-manager.nixosModules.home-manager
+                              stylix.nixosModules.stylix
+                              {
+                                  home-manager = {
+                                      useGlobalPkgs = true;
+                                      useUserPackages = true;
+                                      backupFileExtension = "backup";
+                                      extraSpecialArgs = {
+                                          inherit inputs;
+                                          inherit pkgs-stable;
+                                      };
+                                  };
+                              }
+                          ];
+                          specialArgs = {
+                              inherit pkgs-stable;
+                              inherit inputs;
                           };
-                      }
-                  ];
-                  specialArgs = {
-                      inherit pkgs-stable;
-                      inherit inputs;
-                  };
-              };
+                      };
+                  }) hosts
+              );
           };
 }
