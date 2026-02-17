@@ -9,7 +9,6 @@ let
     browser = config.userSettings.browser;
     terminal = config.userSettings.terminal;
     spotify = config.userSettings.spotify;
-    keyboard = config.userSettings.hyprland.keyboard;
     vicinae = config.userSettings.vicinae;
     editor = config.userSettings.editor;
 
@@ -24,11 +23,6 @@ in
         userSettings.hyprland = {
             enable = lib.mkEnableOption "Enables Hyprland";
             nvidia = lib.mkEnableOption "Enables Nvidia for Hyprland";
-            keyboard = lib.mkOption {
-                type = lib.types.str;
-                default = "";
-                description = "Keyboard Name";
-            };
             config = lib.mkOption {
                 type = lib.types.attrs;
                 default = { };
@@ -138,7 +132,7 @@ in
                     "$SUPER_CTRL, P, exec, hyprshot -m output -m active"
 
                     # Switch keyboard layouts
-                    "$mainMod, Tab, exec, hyprctl switchxkblayout ${keyboard} next"
+                    "$mainMod, Tab, exec, hyprctl switchxkblayout current next"
 
                     "$SUPER_SHIFT, H, resizeactive, -$rotate_val 0"
                     "$SUPER_SHIFT, J, resizeactive, 0 $rotate_val"

@@ -14,6 +14,7 @@
         ./stylix
         ./pipewire
         ./userinfo
+        ./kanata
     ];
 
     home-manager.users.${config.systemSettings.user}.imports = [
