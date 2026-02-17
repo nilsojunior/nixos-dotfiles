@@ -26,6 +26,36 @@
 
     time.timeZone = "Brazil/East";
 
+    boot = {
+        loader = {
+            systemd-boot.enable = true;
+            efi.canTouchEfiVariables = true;
+            timeout = 0; # Acess by pressing space
+        };
+        kernelParams = [ "quiet" ];
+    };
+
+    services = {
+        # Journal (logs)
+        # Limit size and things to optimize boot speed
+        journald = {
+            extraConfig = "SystemMaxUse=50M\nSystemMaxFiles=5";
+            rateLimitBurst = 500;
+            rateLimitInterval = "30s";
+        };
+
+        getty.autologinUser = config.systemSettings.user;
+
+        tailscale.enable = true;
+    };
+
+    security.rtkit.enable = true;
+
+    networking.networkmanager.enable = true;
+    # Don't wait for internet connection to start
+    systemd.services.NetworkManager-wait-online.wantedBy = lib.mkForce [ ];
+
+
     nix.settings.experimental-features = [
         "nix-command"
         "flakes"

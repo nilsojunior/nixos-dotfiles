@@ -17,7 +17,7 @@
             enable = true;
             theme = "gruvboxing";
         };
-        # spotify.enable = true;
+        spotify.enable = true;
         ssh.enable = true;
         vicinae.enable = true;
     };
