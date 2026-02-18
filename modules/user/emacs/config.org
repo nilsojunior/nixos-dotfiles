@@ -304,9 +304,13 @@ Maybe I want buffer navigation keybinds?
 
   (defun nj/paste-from-system ()
     (interactive)
-    (if (eq major-mode 'vterm-mode)
-        (vterm-yank-primary)
-    (evil-paste-from-register ?+)))
+    (let* ((clip (string-trim (evil-get-register ?+)))
+           (new-lines (cl-count ?\n clip)))
+      (if (eq major-mode 'vterm-mode)
+          (vterm-insert clip)
+        (let ((start (point)))
+          (insert clip)
+          (indent-region start (point))))))
 
   (keymap-set global-map "C-S-V" 'nj/paste-from-system)
 #+end_src
