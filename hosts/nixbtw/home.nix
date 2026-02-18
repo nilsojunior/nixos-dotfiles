@@ -5,6 +5,7 @@
     ];
 
     userSettings = {
+        laptop = true;
         hyprland.enable = true;
         zsh.enable = true;
         browser = "firefox";

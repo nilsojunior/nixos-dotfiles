@@ -11,6 +11,7 @@ let
     spotify = config.userSettings.spotify;
     vicinae = config.userSettings.vicinae;
     editor = config.userSettings.editor;
+    laptop = config.userSettings.laptop;
 
     themes = import ./themes.nix;
 
@@ -36,13 +37,21 @@ in
 
         home.packages = with pkgs; [
             kitty
+
             hyprpicker
             hyprshot
             hyprlock
+
+            playerctl
+            brightnessctl
         ];
 
         wayland.windowManager.hyprland.settings = lib.mkMerge [
             {
+                cursor = {
+                    hide_on_key_press = true;
+                };
+
                 "$mainMod" = "SUPER";
                 "$rotate_val" = 100;
 
@@ -182,13 +191,29 @@ in
                 ];
 
                 cursor = {
-                    hide_on_key_press = true;
                     no_hardware_cursors = true;
                 };
 
                 misc = {
                     vrr = 1;
                 };
+            })
+
+            (lib.mkIf laptop {
+                bindel = [
+                    ", XF86AudioRaiseVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
+                    ", XF86AudioLowerVolume, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
+                ];
+                bindl = [
+                    ", XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+                    ",XF86AudioMicMute, exec, wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+
+                    ", pause, exec, playerctl play-pause"
+                ];
+                bind = [
+                    ",XF86MonBrightnessUp, exec, brightnessctl s 10%+"
+                    ",XF86MonBrightnessDown, exec, brightnessctl s 10%-"
+                ];
             })
 
             # Add extra config

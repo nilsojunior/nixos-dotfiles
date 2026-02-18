@@ -14,6 +14,7 @@
         ./spotify
         ./ssh
         ./vicinae
+        ./laptop
     ];
 
     home.file.".config/nvim".source = ./nvim;

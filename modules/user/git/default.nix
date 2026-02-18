@@ -27,7 +27,7 @@ in
         programs.git.settings = {
             user = {
                 name = "Nilso Júnior";
-                email = "nj@nilsojunior.xyz";
+                email = "162613094+nilsojunior@users.noreply.github.com";
             };
 
             init.defaultBranch = "main";
