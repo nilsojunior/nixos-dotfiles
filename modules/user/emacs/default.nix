@@ -29,6 +29,7 @@ in
                     undo-fu-session
                     magit
                     vterm
+                    envrc
 
                     diredfl
                     xterm-color

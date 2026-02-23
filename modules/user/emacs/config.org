@@ -628,3 +628,9 @@ Also set TERM accordingly (xterm-256color) in the shell itself
   (nj/leader-keys "te" '(nj/toggle-vterm :wk "Toggle vterm"))
   (nj/leader-keys "td" '(nj/toggle-vterm-in-buffer :wk "Toggle vterm"))
 #+end_src
+
+* Envrc
+#+begin_src emacs-lisp
+  (require 'envrc)
+  (envrc-global-mode)
+#+end_src
