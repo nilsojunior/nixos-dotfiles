@@ -357,7 +357,8 @@ Make ellipsis use the same color as the header
                 (p-root (project-root project)))
       (let ((files (mapcar (lambda (f) (expand-file-name f p-root))
                            '(".clang-format"))))
-        (unless (seq-some 'file-exists-p files)
+        (unless (or (seq-some 'file-exists-p files)
+                    (eq major-mode 'makefile-gmake-mode))
           (indent-region (point-min) (point-max)))))
     (delete-trailing-whitespace))
 
@@ -470,6 +471,12 @@ We use manual toggle
 Just TAB will trigger completion instead of M-TAB
 #+begin_src emacs-lisp
   (setq tab-always-indent 'complete)
+
+  ;; https://github.com/minad/corfu/issues/34#issuecomment-903308126
+  (with-eval-after-load 'cc-mode
+    (define-key c-mode-base-map
+                [remap c-indent-line-or-region]
+                #'completion-at-point))
 #+end_src
 
 * Treesitter
@@ -494,6 +501,8 @@ Maybe I should just use `rust-mode` with `rust-mode-treesitter-derive`?
   ;; (lua-mode . lua-ts-mode)
   ;; (just-mode . just-ts-mode)
   ;; (markdown-mode . markdown-ts-mode)))
+
+  (setq c-basic-offset 4)
 
   (defun nj/set-indentation (modes)
     (dolist (mode modes)
