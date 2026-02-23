@@ -24,6 +24,8 @@
     programs.zsh.enable = true;
     users.defaultUserShell = pkgs.zsh;
 
+    programs.direnv.enable = true;
+
     time.timeZone = "Brazil/East";
 
     boot = {
