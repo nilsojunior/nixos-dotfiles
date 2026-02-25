@@ -46,7 +46,7 @@ in
                         };
                         github = {
                             name = "GitHub";
-                            urls = [ { template = "https://github.com/search?q={searchTerms}"; } ];
+                            urls = [ { template = "https://duckduckgo.com/?q=site: github.com {searchTerms}"; } ];
                             icon = "https://github.com/favicon.ico";
                             definedAliases = [ "!gh" ];
                         };
