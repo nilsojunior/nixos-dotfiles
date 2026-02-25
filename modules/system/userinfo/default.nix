@@ -19,7 +19,7 @@ in
     config = {
         users.users.${user} = {
             isNormalUser = true;
-            extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+            extraGroups = [ "wheel" "networkmanager" ];
         };
 
         home-manager.users.${user} = {
