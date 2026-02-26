@@ -30,6 +30,7 @@ in
                     magit
                     vterm
                     envrc
+                    evil-mc
 
                     diredfl
                     xterm-color

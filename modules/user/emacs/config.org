@@ -297,7 +297,7 @@ Maybe I want buffer navigation keybinds?
     "fk" '(recentf :wk "Recent File")
     "fi" '(imenu :wk "Imenu")
     "sd" '(shell-command :wk "Shell Command")
-    "sf" '(async-shell-command :wk "Async Shell Command")
+    "sa" '(async-shell-command :wk "Async Shell Command")
     "cj" '(recompile :wk "Recompile")
     "ck" '(compile :wk "Compile")
     "gh" '(nj/open-remote :wk "Open remote repo in browser"))
@@ -365,6 +365,7 @@ Make ellipsis use the same color as the header
   (add-hook 'before-save-hook 'nj/format-buffer)
 
   (global-auto-revert-mode)
+  (setq global-auto-revert-non-file-buffers t)
 
   ;; Source - https://stackoverflow.com/a/8371037
   ;; Posted by angus
@@ -642,4 +643,29 @@ Also set TERM accordingly (xterm-256color) in the shell itself
 #+begin_src emacs-lisp
   (require 'envrc)
   (envrc-global-mode)
+#+end_src
+
+* Evil MC
+#+begin_src emacs-lisp
+  (require 'evil-mc)
+  (global-evil-mc-mode)
+
+  (advice-add 'evil-force-normal-state :before 'evil-mc-undo-all-cursors)
+  (advice-add 'keyboard-quit :before 'evil-mc-undo-all-cursors)
+
+  (nj/leader-keys
+    "ma" '(evil-mc-make-all-cursors :wk "Make All Cursors")
+    "mc" '(evil-mc-make-cursor-here :wk "Make Cursor At Point")
+    "mp" '(evil-mc-pause-cursors :wk "Pause Cursors")
+    "mr" '(evil-mc-resume-cursors :wk "Resume Cursors"))
+
+  (evil-define-key 'visual evil-mc-key-map
+    "A" 'evil-mc-make-cursor-in-visual-selection-end
+    "I" 'evil-mc-make-cursor-in-visual-selection-beg)
+
+  (evil-define-key 'normal evil-mc-key-map
+    (kbd "C-p") 'evil-mc-make-and-goto-prev-match
+    (kbd "C-n") 'evil-mc-make-and-goto-next-match
+    (kbd "C-S-p") 'evil-mc-skip-and-goto-prev-match
+    (kbd "C-S-n") 'evil-mc-skip-and-goto-next-match)
 #+end_src
