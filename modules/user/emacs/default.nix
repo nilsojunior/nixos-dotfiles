@@ -50,6 +50,7 @@ in
                     markdown-mode
                     markdown-ts-mode
                     typst-ts-mode
+                    glsl-mode
                     qml-mode
                     (treesit-grammars.with-grammars (
                         grammars: with grammars; [
@@ -59,6 +60,7 @@ in
                             tree-sitter-lua
                             tree-sitter-markdown
                             tree-sitter-typst
+                            tree-sitter-glsl
                         ]
                     ))
                 ];
